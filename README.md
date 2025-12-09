@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎓 Plataforma Educação com Evidências (EcE)
 
-## Getting Started
+> *"Transformamos dados e boas evidências em acolhimento e ações reais."*
 
-First, run the development server:
+A **Plataforma EcE** é uma iniciativa dedicada a conectar a ciência educacional com a prática de sala de aula. Nossa missão é democratizar o acesso a evidências científicas de qualidade, oferecendo ferramentas intuitivas para professores, gestores e famílias.
+
+---
+
+## 🚀 Funcionalidades
+
+### 🏛️ Institucional & Metodologia
+- **Apresentação Impactante:** Uma interface moderna e acolhedora que apresenta a missão e os valores da EcE.
+- **Quem Somos:** Conheça as mentes por trás do projeto, com perfis interativos dos fundadores.
+- **Metodologia Visual:** Explicação clara dos pilares da "Ciência do Afeto" e "Educação com Evidências".
+
+### 🔬 EcE Lab (Laboratório de Evidências)
+O coração da plataforma. Um explorador de dados robusto e amigável:
+- **Busca Inteligente:** Pesquise por termos, títulos ou ações práticas.
+- **Filtros Dinâmicos:** Refine sua busca por critérios de qualidade:
+  - 🎯 **Certeza de Causa** (Validade Interna)
+  - 📊 **Precisão dos Dados** (Confiabilidade)
+  - 🌍 **Potencial de Escala** (Validade Externa)
+- **Badges Visuais:** Identificação rápida da qualidade das evidências com sistema de cores semafórico.
+- **Ferramentas de Exportação:**
+  - 📄 Gerador de Relatórios em HTML (para impressão ou compartilhamento).
+  - 💾 Exportação de dados brutos em CSV.
+- **Detalhes Profundos:** Modais informativos com diagnósticos metodológicos e recomendações práticas.
+
+### 🚧 Recursos Digitais (Monitor)
+- Área dedicada a ferramentas de gestão e visualização de dados territoriais (Em construção).
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+Construído com uma stack moderna focada em performance e experiência do usuário (UX):
+
+- **[Next.js 14](https://nextjs.org/)** (App Router): Framework React para produção, garantindo renderização rápida (Server Components).
+- **[TypeScript](https://www.typescriptlang.org/)**: Tipagem estática para um código mais seguro e robusto.
+- **[Tailwind CSS](https://tailwindcss.com/)**: Estilização utilitária para um design sistema consistente e responsivo.
+- **[Supabase](https://supabase.com/)**: Backend as a Service (PostgreSQL) para armazenamento seguro e escalável das evidências.
+- **[Lucide React](https://lucide.dev/)**: Ícones elegantes e leves.
+
+---
+
+## 📂 Estrutura do Projeto
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+├── app/                  # Rotas e Páginas (App Router)
+│   ├── lab/              # Página do Laboratório (Fetch no Server)
+│   └── page.tsx          # Landing Page
+├── components/           # Componentes Reutilizáveis (UI)
+│   ├── EvidenceDetailModal.tsx  # Modal de detalhes da evidência
+│   ├── Hero.tsx          # Seção principal
+│   ├── About.tsx         # Seção Quem Somos
+│   └── ...
+├── utils/                # Utilitários e Configuração do Supabase
+└── public/               # Assets estáticos (Imagens, Logos)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 👣 Próximos Passos & Roadmap
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [ ] Integração completa do Dashboard de Monitoramento (Shiny/Streamlit).
+- [ ] Área de login para gestores e parceiros.
+- [ ] Blog integrado para artigos de profundidade.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 👥 Autores
 
-To learn more about Next.js, take a look at the following resources:
+| [<img src="public/will.jpg" width="100px;" alt=""/><br /><sub><b>William Melo</b></sub>](https://www.linkedin.com/in/williamcorreademelo/)<br />🚀 Fundador & Educador | [<img src="public/isabel.png" width="100px;" alt=""/><br /><sub><b>Isabel Costa</b></sub>](https://www.linkedin.com/in/isabel-c-aa9117a7/)<br />💼 Gestão Administrativa |
+| :---: | :---: |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+  <p>Feito com ❤️ e Ciência.</p>
+</div>
