@@ -1,0 +1,80 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X, Lightbulb } from 'lucide-react';
+
+export default function Navbar() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-20 items-center">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center cursor-pointer">
+                        <div className="relative h-10 w-40">
+                            <Image
+                                src="/logo.png"
+                                alt="Educação com Evidências - Logo"
+                                fill
+                                className="object-contain object-left"
+                                priority
+                            />
+                        </div>
+                    </Link>
+
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center space-x-8">
+                        <Link
+                            href="/"
+                            className="font-medium text-brand-brown hover:opacity-80 transition-colors"
+                        >
+                            Institucional
+                        </Link>
+                        <button
+                            className="text-gray-500 hover:text-brand-brown font-medium transition-colors"
+                        >
+                            Metodologia
+                        </button>
+                        <Link
+                            href="/lab"
+                            className="bg-brand-brown hover:bg-[#4E342E] text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-md flex items-center gap-2"
+                        >
+                            <Lightbulb size={18} />
+                            Acessar EcE Lab
+                        </Link>
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden">
+                        <button onClick={() => setIsOpen(!isOpen)} className="text-brand-brown">
+                            {isOpen ? <X size={28} /> : <Menu size={28} />}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isOpen && (
+                <div className="md:hidden bg-white border-t border-gray-100 p-4 space-y-4 shadow-lg">
+                    <Link
+                        href="/"
+                        onClick={() => setIsOpen(false)}
+                        className="block w-full text-left py-2 font-medium text-brand-brown"
+                    >
+                        Home
+                    </Link>
+                    <Link
+                        href="/lab"
+                        onClick={() => setIsOpen(false)}
+                        className="block w-full text-left py-2 font-medium text-brand-brown"
+                    >
+                        EcE Lab
+                    </Link>
+                </div>
+            )}
+        </nav>
+    );
+}
