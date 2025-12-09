@@ -31,6 +31,15 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
 
     const { details } = evidence;
 
+    // Helper para formatar texto (novas linhas literais e markdown simples)
+    const formatText = (text: string) => {
+        if (!text) return '';
+        return text
+            .replace(/\\n/g, '<br/>') // Remove literal \n
+            .replace(/\n/g, '<br/>')  // Remove newlines reais
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold simples
+    };
+
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-end transition-opacity">
             <div className="bg-white w-full max-w-2xl h-full overflow-y-auto shadow-2xl animate-slide-in-right">
@@ -54,7 +63,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                     {/* Resumo Aside */}
                     <aside className="bg-pink-50/50 p-6 rounded-2xl border-l-4 border-brand-brown text-gray-700 italic leading-relaxed">
                         <span className="block text-2xl mb-2">✏️</span>
-                        <div dangerouslySetInnerHTML={{ __html: (details.resumo_aside || '').replace(/\n/g, '<br/>') }} />
+                        <div dangerouslySetInnerHTML={{ __html: formatText(details.resumo_aside) }} />
                     </aside>
 
                     {/* Para quem é? */}
