@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, PenTool, Zap } from 'lucide-react';
+import { ArrowLeft, BookOpen, PenTool, Users } from 'lucide-react';
 
 export default function MethodologyPage() {
     return (
