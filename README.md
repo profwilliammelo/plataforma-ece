@@ -2,16 +2,16 @@
 
 > *"Transformamos dados e boas evidências em acolhimento e ações reais."*
 
-A **Plataforma EcE** é uma iniciativa dedicada a conectar a ciência educacional com a prática de sala de aula. Nossa missão é democratizar o acesso a evidências científicas de qualidade, oferecendo ferramentas intuitivas para professores, gestores e famílias.
+A **Plataforma EcE** é uma iniciativa dedicada a conectar a ciência educacional com a prática de sala de aula. Nossa missão é democratizar o acesso a evidências científicas de qualidade, oferecendo formações e ferramentas intuitivas para professores, gestores, famílias e todos os demais profissionais da educação ou envolvidos com educação.
 
 ---
 
 ## 🚀 Funcionalidades
 
 ### 🏛️ Institucional & Metodologia
-- **Apresentação Impactante:** Uma interface moderna e acolhedora que apresenta a missão e os valores da EcE.
-- **Quem Somos:** Conheça as mentes por trás do projeto, com perfis interativos dos fundadores.
-- **Metodologia Visual:** Explicação clara dos pilares da "Ciência do Afeto" e "Educação com Evidências".
+- **Apresentação:** Uma interface moderna e acolhedora que apresenta a missão e os valores da EcE.
+- **Quem Somos:** Conheça as mentes por trás do projeto, com perfis dos fundadores.
+- **Metodologia Visual:** Explicação clara do Método EcE.
 
 ### 🔬 EcE Lab (Laboratório de Evidências)
 O coração da plataforma. Um explorador de dados robusto e amigável:
@@ -27,7 +27,7 @@ O coração da plataforma. Um explorador de dados robusto e amigável:
 - **Detalhes Profundos:** Modais informativos com diagnósticos metodológicos e recomendações práticas.
 
 ### 🚧 Recursos Digitais (Monitor)
-- Área dedicada a ferramentas de gestão e visualização de dados territoriais (Em construção).
+- Área dedicada a ferramentas de visualização de dados e outros recursos digitais que possam ampliar a qualificação da prática educativa (Em construção).
 
 ---
 
@@ -60,9 +60,9 @@ Construído com uma stack moderna focada em performance e experiência do usuár
 
 ## 👣 Próximos Passos & Roadmap
 
-- [ ] Integração completa do Dashboard de Monitoramento (Shiny/Streamlit).
+- [ ] Integração de recursso digitais - paineis, estudos, apps ja desenvolvidos ou sugeridos pra uso.
 - [ ] Área de login para gestores e parceiros.
-- [ ] Blog integrado para artigos de profundidade.
+- [ ] Blog integrado
 
 ---
 
