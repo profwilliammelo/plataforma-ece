@@ -24,9 +24,18 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
     const [filterConf, setFilterConf] = useState<string[]>([]); // Confiabilidade
     const [filterVE, setFilterVE] = useState<string[]>([]); // Validade Externa
 
-    // Extrair opções únicas para filtros
-    const allTags = Array.from(new Set(evidenceData.flatMap(item => item.tags || [])));
-    const levels = ['Alta', 'Média', 'Baixa', 'N/A'];
+    // Extrair opções únicas para filtros (Dinâmico e Ordenado)
+    const customSort = (a: string, b: string) => {
+        const order = { 'Alta': 1, 'Média': 2, 'Baixa': 3, 'N/A': 4 };
+        return (order[a as keyof typeof order] || 99) - (order[b as keyof typeof order] || 99);
+    };
+
+    const allTags = Array.from(new Set(evidenceData.flatMap(item => item.tags || []))).sort();
+
+    // Filtros dinâmicos baseados nos dados existentes
+    const optionsVI = Array.from(new Set(evidenceData.map(item => item.validade_interna || 'N/A'))).sort(customSort);
+    const optionsConf = Array.from(new Set(evidenceData.map(item => item.confiabilidade || 'N/A'))).sort(customSort);
+    const optionsVE = Array.from(new Set(evidenceData.map(item => item.validade_externa || 'N/A'))).sort(customSort);
 
     // Lógica de Filtragem
     const filteredData = useMemo(() => {
@@ -39,9 +48,9 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
             const matchesTags = selectedTags.length === 0 || (item.tags && item.tags.some(tag => selectedTags.includes(tag)));
 
             // Novos Matches
-            const matchesVI = filterVI.length === 0 || filterVI.includes(item.validade_interna);
-            const matchesConf = filterConf.length === 0 || filterConf.includes(item.confiabilidade);
-            const matchesVE = filterVE.length === 0 || filterVE.includes(item.validade_externa);
+            const matchesVI = filterVI.length === 0 || filterVI.includes(item.validade_interna || 'N/A');
+            const matchesConf = filterConf.length === 0 || filterConf.includes(item.confiabilidade || 'N/A');
+            const matchesVE = filterVE.length === 0 || filterVE.includes(item.validade_externa || 'N/A');
 
             return matchesSearch && matchesTags && matchesVI && matchesConf && matchesVE;
         });
@@ -69,7 +78,7 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
     // --- FUNÇÕES DE EXPORTAÇÃO ---
 
     const exportToCSV = () => {
-        const headers = ['ID', 'Título', 'Resumo', 'Ação', 'Tags', 'Validade Interna', 'Confiabilidade', 'Validade Externa', 'Ano', 'Link'];
+        const headers = ['ID', 'Título', 'Resumo', 'Ação', 'Tags', 'Certeza de Causa', 'Precisão dos Dados', 'Potencial de Escala', 'Ano', 'Link'];
         const csvContent = [
             headers.join(','),
             ...filteredData.map(item => [
@@ -146,9 +155,9 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
           <div class="evidence-item">
             <div class="evidence-header">
               <div class="badges">
-                  <span class="validity">VI: ${item.validade_interna}</span>
-                  <span class="validity">C: ${item.confiabilidade}</span>
-                  <span class="validity">VE: ${item.validade_externa}</span>
+                  <span class="validity" title="Certeza de Causa">Causa: ${item.validade_interna}</span>
+                  <span class="validity" title="Precisão dos Dados">Dados: ${item.confiabilidade}</span>
+                  <span class="validity" title="Potencial de Escala">Escala: ${item.validade_externa}</span>
               </div>
               ${item.year ? `<span style="font-size: 12px; color: #666;">Ano: ${item.year}</span>` : ''}
             </div>
@@ -293,25 +302,34 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
 
                                     <div className="grid md:grid-cols-4 gap-6">
                                         <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Validade Interna</label>
+                                            <div className="flex items-center gap-1 mb-2">
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Certeza de Causa</label>
+                                                <span className="text-[10px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100" title="Validade Interna: O quanto podemos confiar que a ação causou o resultado?">?</span>
+                                            </div>
                                             <div className="flex flex-wrap gap-2">
-                                                {levels.map(val => (
+                                                {optionsVI.map(val => (
                                                     <button key={val} onClick={() => toggleCriteria('VI', val)} className={`px-2 py-1 rounded text-xs border ${filterVI.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
                                                 ))}
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Confiabilidade</label>
+                                            <div className="flex items-center gap-1 mb-2">
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Precisão dos Dados</label>
+                                                <span className="text-[10px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100" title="Confiabilidade: Os dados foram coletados de forma rigorosa e precisa?">?</span>
+                                            </div>
                                             <div className="flex flex-wrap gap-2">
-                                                {levels.map(val => (
+                                                {optionsConf.map(val => (
                                                     <button key={val} onClick={() => toggleCriteria('Conf', val)} className={`px-2 py-1 rounded text-xs border ${filterConf.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
                                                 ))}
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Validade Externa</label>
+                                            <div className="flex items-center gap-1 mb-2">
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Potencial de Escala</label>
+                                                <span className="text-[10px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100" title="Validade Externa: Funciona em outros lugares além de onde foi testado?">?</span>
+                                            </div>
                                             <div className="flex flex-wrap gap-2">
-                                                {levels.map(val => (
+                                                {optionsVE.map(val => (
                                                     <button key={val} onClick={() => toggleCriteria('VE', val)} className={`px-2 py-1 rounded text-xs border ${filterVE.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
                                                 ))}
                                             </div>
@@ -346,11 +364,14 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                 >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex gap-1">
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.validity ?? item.validade_interna)}`}>
-                                                VI: {item.validade_interna}
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.validade_interna)}`} title="Certeza de Causa">
+                                                Causa: {item.validade_interna}
                                             </span>
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.confiabilidade)}`}>
-                                                C: {item.confiabilidade}
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.confiabilidade)}`} title="Precisão dos Dados">
+                                                Dados: {item.confiabilidade}
+                                            </span>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.validade_externa)}`} title="Potencial de Escala">
+                                                Escala: {item.validade_externa}
                                             </span>
                                         </div>
                                         <div className="flex gap-2">
