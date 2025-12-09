@@ -1,4 +1,5 @@
-import { Atom, Palette, Rocket, Users, Cpu, ArrowRight, Sparkles } from 'lucide-react';
+import { Atom, Palette, Rocket, Users, ArrowRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Methodology() {
     return (
@@ -9,7 +10,7 @@ export default function Methodology() {
                     Transformamos conhecimento acadêmico em impacto real na sala de aula através de um processo único que une ciência, arte e tecnologia.
                 </p>
 
-                <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-0">
+                <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-0 mb-12">
 
                     {/* Passo 1: Ciência */}
                     <div className="relative z-10 flex flex-col items-center group">
@@ -70,6 +71,15 @@ export default function Methodology() {
 
                     {/* Linha conectora de fundo (Desktop apenas) */}
                     <div className="absolute top-12 left-0 w-full h-1 bg-pink-50 -z-0 hidden md:block"></div>
+                </div>
+
+                <div>
+                    <Link
+                        href="/metodologia"
+                        className="inline-flex items-center gap-2 text-brand-brown font-bold border-b-2 border-brand-brown pb-1 hover:text-pink-600 hover:border-pink-600 transition-colors"
+                    >
+                        Conhecer a Metodologia em Detalhes <ArrowRight size={16} />
+                    </Link>
                 </div>
             </div>
         </section>

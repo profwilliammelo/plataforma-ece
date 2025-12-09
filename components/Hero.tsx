@@ -24,9 +24,12 @@ export default function Hero() {
                             Explorar o EcE Lab
                             <ChevronRight />
                         </Link>
-                        <button className="bg-white text-brand-brown border-2 border-brand-brown/20 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-pink-50 transition-all">
+                        <Link
+                            href="/metodologia"
+                            className="bg-white text-brand-brown border-2 border-brand-brown/20 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-pink-50 transition-all flex items-center justify-center"
+                        >
                             Conhecer Metodologia
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
