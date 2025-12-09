@@ -3,6 +3,7 @@ import Hero from '@/components/Hero';
 import Methodology from '@/components/Methodology';
 import PersonaCard from '@/components/PersonaCard';
 import Testimonial from '@/components/Testimonial';
+import About from '@/components/About';
 import { GraduationCap, BarChart2, Users, FileText } from 'lucide-react';
 
 export default function Home() {
@@ -42,6 +43,7 @@ export default function Home() {
         </div>
       </div>
 
+      <About />
       <Testimonial />
     </main>
   );

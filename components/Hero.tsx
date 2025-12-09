@@ -24,12 +24,14 @@ export default function Hero() {
                             Explorar o EcE Lab
                             <ChevronRight />
                         </Link>
-                        <Link
-                            href="/metodologia"
+                        <a
+                            href="https://wa.me/5521936189048"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="bg-white text-brand-brown border-2 border-brand-brown/20 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-pink-50 transition-all flex items-center justify-center"
                         >
-                            Conhecer Metodologia
-                        </Link>
+                            Consultoria e Formações
+                        </a>
                     </div>
                 </div>
             </div>
