@@ -38,8 +38,8 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                 <div className="sticky top-0 bg-white/90 backdrop-blur border-b border-gray-100 px-8 py-6 flex justify-between items-start z-10">
                     <div>
                         <div className="flex gap-2 mb-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-bold border bg-gray-50 text-gray-600`}>
-                                {evidence.validity}
+                            <span className={`px-2 py-1 rounded-full text-xs font-bold border bg-purple-50 text-purple-700 border-purple-100`}>
+                                VI: {evidence.validade_interna}
                             </span>
                             {evidence.tags.map(t => <span key={t} className="px-2 py-1 rounded-full text-xs bg-pink-50 text-brand-brown">#{t}</span>)}
                         </div>
@@ -125,23 +125,32 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                         </div>
                     </section>
 
-                    {/* Rubrica EcE Lab */}
+                    {/* Diagnóstico EcE.Lab (Atualizado) */}
                     <section>
                         <h3 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">
-                            📰 Diagnóstico EcE.Lab
+                            📰 Diagnóstico Metodológico
                         </h3>
                         <div className="space-y-3">
                             <div className="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                                <span className="text-sm font-bold text-gray-600">Validade Interna</span>
-                                <ValidityBadge value={details.diagnostico.validade_interna} />
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-600">Validade Interna</span>
+                                    <span className="text-xs text-gray-400">O estudo isolou bem a causa?</span>
+                                </div>
+                                <ValidityBadge value={evidence.validade_interna} />
                             </div>
                             <div className="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                                <span className="text-sm font-bold text-gray-600">Poder / Precisão</span>
-                                <ValidityBadge value={details.diagnostico.poder_precisao} />
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-600">Confiabilidade</span>
+                                    <span className="text-xs text-gray-400">Precisão estatística dos dados?</span>
+                                </div>
+                                <ValidityBadge value={evidence.confiabilidade} />
                             </div>
                             <div className="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-                                <span className="text-sm font-bold text-gray-600">Generalização</span>
-                                <ValidityBadge value={details.diagnostico.generalizacao} />
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-600">Validade Externa</span>
+                                    <span className="text-xs text-gray-400">Generalizável para outros contextos?</span>
+                                </div>
+                                <ValidityBadge value={evidence.validade_externa} />
                             </div>
                         </div>
                     </section>

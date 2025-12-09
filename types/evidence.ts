@@ -13,11 +13,6 @@ export interface EvidenceDetail {
         significancia: string;
         observacoes: string;
     }[];
-    diagnostico: {
-        validade_interna: 'Excelente' | 'Boa' | 'Moderada' | 'Baixa' | 'Muito Baixa';
-        poder_precisao: 'Alta' | 'Média' | 'Média-baixa' | 'Baixa';
-        generalizacao: 'Alta' | 'Moderada' | 'Limitada' | 'Muito Limitada';
-    };
     recomendacoes: {
         uso: string;
         evitar: string;
@@ -27,13 +22,19 @@ export interface EvidenceDetail {
     referencia: string;
 }
 
+export type ValidadeNivel = 'Alta' | 'Média' | 'Baixa' | 'N/A';
+
 export interface Evidence {
     id: number;
     title: string;
     summary: string;
     action: string;
     tags: string[];
-    validity: string;
+    // Novos critérios principais
+    validade_interna: ValidadeNivel;
+    validade_externa: ValidadeNivel;
+    confiabilidade: ValidadeNivel;
+
     link?: string;
     year?: number;
     details?: EvidenceDetail;

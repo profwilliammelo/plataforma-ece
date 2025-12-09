@@ -17,12 +17,16 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
     // States de Filtro
     const [showFilters, setShowFilters] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedValidity, setSelectedValidity] = useState<string[]>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    // Novos Filtros (3 Critérios)
+    const [filterVI, setFilterVI] = useState<string[]>([]); // Validade Interna
+    const [filterConf, setFilterConf] = useState<string[]>([]); // Confiabilidade
+    const [filterVE, setFilterVE] = useState<string[]>([]); // Validade Externa
 
     // Extrair opções únicas para filtros
     const allTags = Array.from(new Set(evidenceData.flatMap(item => item.tags || [])));
-    const allValidities = Array.from(new Set(evidenceData.map(item => item.validity)));
+    const levels = ['Alta', 'Média', 'Baixa', 'N/A'];
 
     // Lógica de Filtragem
     const filteredData = useMemo(() => {
@@ -32,26 +36,32 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                 item.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.action.toLowerCase().includes(searchTerm.toLowerCase());
 
-            const matchesValidity = selectedValidity.length === 0 || selectedValidity.includes(item.validity);
             const matchesTags = selectedTags.length === 0 || (item.tags && item.tags.some(tag => selectedTags.includes(tag)));
 
-            return matchesSearch && matchesValidity && matchesTags;
-        });
-    }, [evidenceData, searchTerm, selectedValidity, selectedTags]);
+            // Novos Matches
+            const matchesVI = filterVI.length === 0 || filterVI.includes(item.validade_interna);
+            const matchesConf = filterConf.length === 0 || filterConf.includes(item.confiabilidade);
+            const matchesVE = filterVE.length === 0 || filterVE.includes(item.validade_externa);
 
-    const toggleFilter = (type: 'validity' | 'tags', value: string) => {
-        if (type === 'validity') {
-            setSelectedValidity(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
-        } else {
-            setSelectedTags(prev => prev.includes(value) ? prev.filter(t => t !== value) : [...prev, value]);
-        }
+            return matchesSearch && matchesTags && matchesVI && matchesConf && matchesVE;
+        });
+    }, [evidenceData, searchTerm, selectedTags, filterVI, filterConf, filterVE]);
+
+    const toggleTag = (tag: string) => {
+        setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
     };
 
-    const getValidityColor = (validity: string) => {
-        switch (validity) {
-            case 'Forte': return 'bg-green-100 text-green-800 border-green-200';
-            case 'Promissor': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'Em Estudo': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    const toggleCriteria = (criteria: 'VI' | 'Conf' | 'VE', value: string) => {
+        if (criteria === 'VI') setFilterVI(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+        if (criteria === 'Conf') setFilterConf(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+        if (criteria === 'VE') setFilterVE(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+    };
+
+    const getColor = (level: string) => {
+        switch (level) {
+            case 'Alta': return 'bg-green-100 text-green-800 border-green-200';
+            case 'Média': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'Baixa': return 'bg-orange-100 text-orange-800 border-orange-200';
             default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
@@ -59,7 +69,7 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
     // --- FUNÇÕES DE EXPORTAÇÃO ---
 
     const exportToCSV = () => {
-        const headers = ['ID', 'Título', 'Resumo', 'Ação', 'Tags', 'Validade', 'Ano', 'Link'];
+        const headers = ['ID', 'Título', 'Resumo', 'Ação', 'Tags', 'Validade Interna', 'Confiabilidade', 'Validade Externa', 'Ano', 'Link'];
         const csvContent = [
             headers.join(','),
             ...filteredData.map(item => [
@@ -68,7 +78,9 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                 `"${item.summary.replace(/"/g, '""')}"`,
                 `"${item.action.replace(/"/g, '""')}"`,
                 `"${(item.tags || []).join(', ')}"`,
-                item.validity,
+                item.validade_interna,
+                item.confiabilidade,
+                item.validade_externa,
                 item.year || '',
                 item.link || ''
             ].join(','))
@@ -102,10 +114,8 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
           .stat-label { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
           .evidence-item { background: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #eee; break-inside: avoid; }
           .evidence-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-          .validity { font-size: 12px; font-weight: bold; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; }
-          .validity.Forte { background-color: #d1fae5; color: #065f46; }
-          .validity.Promissor { background-color: #dbeafe; color: #1e40af; }
-          .validity.Em { background-color: #fef3c7; color: #92400e; } /* Em Estudo */
+          .badges { display: flex; gap: 5px; }
+          .validity { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; border: 1px solid #eee; }
           .title { font-size: 18px; font-weight: bold; margin: 0 0 10px 0; color: #1A1A1A; }
           .section-title { font-size: 12px; font-weight: bold; color: #5D4037; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
           .action-box { background-color: #FFF0F5; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #D81B60; }
@@ -135,7 +145,11 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
         ${filteredData.map(item => `
           <div class="evidence-item">
             <div class="evidence-header">
-              <span class="validity ${item.validity.split(' ')[0]}">${item.validity}</span>
+              <div class="badges">
+                  <span class="validity">VI: ${item.validade_interna}</span>
+                  <span class="validity">C: ${item.confiabilidade}</span>
+                  <span class="validity">VE: ${item.validade_externa}</span>
+              </div>
               ${item.year ? `<span style="font-size: 12px; color: #666;">Ano: ${item.year}</span>` : ''}
             </div>
             <h2 class="title">${item.title}</h2>
@@ -261,9 +275,9 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                 >
                                     <Filter size={18} />
                                     Filtros
-                                    {(selectedTags.length > 0 || selectedValidity.length > 0) && (
+                                    {(selectedTags.length > 0 || filterVI.length > 0 || filterConf.length > 0 || filterVE.length > 0) && (
                                         <span className="bg-brand-brown text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full ml-1">
-                                            {selectedTags.length + selectedValidity.length}
+                                            {selectedTags.length + filterVI.length + filterConf.length + filterVE.length}
                                         </span>
                                     )}
                                 </button>
@@ -274,21 +288,31 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-slide-down">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="font-bold text-gray-800">Refinar Busca</h3>
-                                        <button onClick={() => { setSearchTerm(''); setSelectedTags([]); setSelectedValidity([]); }} className="text-xs text-pink-600 hover:underline">Limpar Filtros</button>
+                                        <button onClick={() => { setSearchTerm(''); setSelectedTags([]); setFilterVI([]); setFilterConf([]); setFilterVE([]); }} className="text-xs text-pink-600 hover:underline">Limpar Filtros</button>
                                     </div>
 
-                                    <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="grid md:grid-cols-4 gap-6">
                                         <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nível de Evidência</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Validade Interna</label>
                                             <div className="flex flex-wrap gap-2">
-                                                {allValidities.map(val => (
-                                                    <button
-                                                        key={val}
-                                                        onClick={() => toggleFilter('validity', val)}
-                                                        className={`px-3 py-1.5 rounded-lg text-sm transition-colors border ${selectedValidity.includes(val) ? 'bg-brand-brown text-white border-brand-brown' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-300'}`}
-                                                    >
-                                                        {val}
-                                                    </button>
+                                                {levels.map(val => (
+                                                    <button key={val} onClick={() => toggleCriteria('VI', val)} className={`px-2 py-1 rounded text-xs border ${filterVI.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Confiabilidade</label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {levels.map(val => (
+                                                    <button key={val} onClick={() => toggleCriteria('Conf', val)} className={`px-2 py-1 rounded text-xs border ${filterConf.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Validade Externa</label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {levels.map(val => (
+                                                    <button key={val} onClick={() => toggleCriteria('VE', val)} className={`px-2 py-1 rounded text-xs border ${filterVE.includes(val) ? 'bg-brand-brown text-white' : 'bg-gray-50'}`}>{val}</button>
                                                 ))}
                                             </div>
                                         </div>
@@ -299,7 +323,7 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                                 {allTags.map(tag => (
                                                     <button
                                                         key={tag}
-                                                        onClick={() => toggleFilter('tags', tag)}
+                                                        onClick={() => toggleTag(tag)}
                                                         className={`px-3 py-1.5 rounded-lg text-sm transition-colors border ${selectedTags.includes(tag) ? 'bg-pink-100 text-brand-brown border-pink-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-gray-300'}`}
                                                     >
                                                         #{tag}
@@ -321,8 +345,13 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                     onClick={() => setSelectedEvidence(item)}
                                 >
                                     <div className="flex justify-between items-start mb-4">
-                                        <div className={`text-xs font-bold px-3 py-1 rounded-full border ${getValidityColor(item.validity)}`}>
-                                            {item.validity}
+                                        <div className="flex gap-1">
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.validity ?? item.validade_interna)}`}>
+                                                VI: {item.validade_interna}
+                                            </span>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.confiabilidade)}`}>
+                                                C: {item.confiabilidade}
+                                            </span>
                                         </div>
                                         <div className="flex gap-2">
                                             {item.year && (
@@ -361,7 +390,7 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                     <h3 className="text-lg font-bold text-gray-700">Nenhum resultado encontrado</h3>
                                     <p className="text-gray-500">Tente ajustar seus filtros ou termos de busca.</p>
                                     <button
-                                        onClick={() => { setSearchTerm(''); setSelectedTags([]); setSelectedValidity([]); }}
+                                        onClick={() => { setSearchTerm(''); setSelectedTags([]); setFilterVI([]); setFilterConf([]); setFilterVE([]); }}
                                         className="mt-4 text-brand-brown font-medium hover:underline"
                                     >
                                         Limpar tudo
