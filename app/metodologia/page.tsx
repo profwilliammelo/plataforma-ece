@@ -48,7 +48,7 @@ export default function MethodologyPage() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-800 mb-3">1. Evidência Científica</h3>
                         <p className="text-gray-600 leading-relaxed text-sm">
-                            Tudo começa com dados. Não "achismos", mas pesquisas longitudinais e estudos de caso validados. Garimpamos o que a academia produziu de mais sólido sobre aprendizagem cognitiva e socioemocional.
+                            Tudo começa com dados. Não "achismos", mas pesquisas de qualidade. Garimpamos o que a academia produziu de mais sólido sobre aprendizagem e equidade em Educação.
                         </p>
                     </div>
 
@@ -58,7 +58,7 @@ export default function MethodologyPage() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-800 mb-3">2. Arte & Tecnologia</h3>
                         <p className="text-gray-600 leading-relaxed text-sm">
-                            A ciência sozinha pode ser fria. Por isso, traduzimos conceitos complexos usando <strong>design, narrativas artísticas e ferramentas digitais</strong>. Nossas formações e consultorias usam a beleza para engajar professores e alunos.
+                            A ciência sozinha pode ser fria e difícil de entender. Por isso, traduzimos conceitos complexos usando <strong>design, narrativas artísticas e ferramentas digitais</strong>. Nossas formações e consultorias usam afeto, ritmo e ciência para influenciar novas práticas educacionais.
                         </p>
                     </div>
 
@@ -68,7 +68,7 @@ export default function MethodologyPage() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-800 mb-3">3. Ação Educacional</h3>
                         <p className="text-gray-600 leading-relaxed text-sm">
-                            O fim é a sala de aula. Entregamos planos de ação, roteiros e intervenções prontas para uso. O objetivo é que na segunda-feira de manhã, o professor saiba exatamente o que fazer diferente.
+                            O fim é a PRÁTICA educacional. Entregamos sugestões de planos e ações com um objetivo: que na segunda-feira de manhã, o professor, o diretor e a família saibam melhor sobre o que fazer diferente.
                         </p>
                     </div>
                 </div>
