@@ -1,5 +1,6 @@
 import React from 'react';
 import Hero from '@/components/Hero';
+import Methodology from '@/components/Methodology';
 import PersonaCard from '@/components/PersonaCard';
 import Testimonial from '@/components/Testimonial';
 import { GraduationCap, BarChart2, Users, FileText } from 'lucide-react';
@@ -8,6 +9,7 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <Methodology />
 
       {/* Section Personas */}
       <div className="max-w-7xl mx-auto px-4 py-16">
