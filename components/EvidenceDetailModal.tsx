@@ -54,7 +54,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                     {/* Resumo Aside */}
                     <aside className="bg-pink-50/50 p-6 rounded-2xl border-l-4 border-brand-brown text-gray-700 italic leading-relaxed">
                         <span className="block text-2xl mb-2">✏️</span>
-                        <div dangerouslySetInnerHTML={{ __html: details.resumo_aside.replace(/\n/g, '<br/>') }} />
+                        <div dangerouslySetInnerHTML={{ __html: (details.resumo_aside || '').replace(/\n/g, '<br/>') }} />
                     </aside>
 
                     {/* Para quem é? */}
@@ -63,7 +63,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                             <Target className="text-brand-brown" /> Para quem é?
                         </h3>
                         <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                            {details.publico_alvo.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item }} />)}
+                            {(details.publico_alvo || []).map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item }} />)}
                         </ul>
                     </section>
 
@@ -73,7 +73,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                             <GitMerge className="text-brand-brown" /> Metodologia (Passo a Passo)
                         </h3>
                         <div className="space-y-4">
-                            {details.metodologia_passos.map((step, i) => (
+                            {(details.metodologia_passos || []).map((step, i) => (
                                 <div key={i} className="flex gap-4">
                                     <div className="font-bold text-brand-brown whitespace-nowrap">{i + 1}. {step.titulo}</div>
                                     <div className="text-gray-600 text-sm">{step.descricao}</div>
@@ -86,7 +86,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                     <section className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
                         <h3 className="text-lg font-bold text-gray-800 mb-6 text-center">📊 Resultados Principais</h3>
                         <div className="grid grid-cols-2 gap-4 mb-6">
-                            {details.resultados_key.map((res, i) => (
+                            {(details.resultados_key || []).map((res, i) => (
                                 <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
                                     <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">{res.label}</div>
                                     <div className="text-xl font-bold text-brand-brown">{res.valor}</div>
@@ -112,7 +112,7 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
-                                    {details.tabela_evidencias.map((row, i) => (
+                                    {(details.tabela_evidencias || []).map((row, i) => (
                                         <tr key={i} className="hover:bg-gray-50">
                                             <td className="p-3 font-medium text-gray-800">{row.desfecho}</td>
                                             <td className="p-3 text-brand-pink font-bold">{row.efeito}</td>
@@ -163,15 +163,15 @@ export default function EvidenceDetailModal({ evidence, onClose }: EvidenceDetai
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-green-50 p-4 rounded-xl border border-green-100">
                                 <div className="font-bold text-green-800 mb-1">Quando usar</div>
-                                <p className="text-sm text-green-700">{details.recomendacoes.uso}</p>
+                                <p className="text-sm text-green-700">{details.recomendacoes?.uso}</p>
                             </div>
                             <div className="bg-red-50 p-4 rounded-xl border border-red-100">
                                 <div className="font-bold text-red-800 mb-1">Quando evitar</div>
-                                <p className="text-sm text-red-700">{details.recomendacoes.evitar}</p>
+                                <p className="text-sm text-red-700">{details.recomendacoes?.evitar}</p>
                             </div>
                             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 md:col-span-2">
                                 <div className="font-bold text-blue-800 mb-1">Recursos Necessários</div>
-                                <p className="text-sm text-blue-700">{details.recomendacoes.recursos}</p>
+                                <p className="text-sm text-blue-700">{details.recomendacoes?.recursos}</p>
                             </div>
                         </div>
                     </section>
