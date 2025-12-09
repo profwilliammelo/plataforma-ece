@@ -1,18 +1,20 @@
 import React from 'react';
 import Image from 'next/image';
 
-const TeamMember = ({ name, role, tags, bio, imageSrc }: { name: string, role: string, tags: string[], bio: string, imageSrc: string }) => (
+const TeamMember = ({ name, role, tags, bio, imageSrc, linkedinUrl }: { name: string, role: string, tags: string[], bio: string, imageSrc: string, linkedinUrl?: string }) => (
     <div className="flex flex-col md:flex-row items-center gap-8 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div className="relative w-48 h-48 flex-shrink-0">
+        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="relative w-48 h-48 flex-shrink-0 cursor-pointer block group">
             <Image
                 src={imageSrc}
                 alt={name}
                 fill
-                className="object-cover rounded-full border-4 border-pink-50"
+                className="object-cover rounded-full border-4 border-pink-50 group-hover:border-brand-brown transition-colors"
             />
-        </div>
+        </a>
         <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl font-bold text-brand-brown mb-2">{name}</h3>
+            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:underline decoration-brand-brown">
+                <h3 className="text-2xl font-bold text-brand-brown mb-2">{name}</h3>
+            </a>
             <p className="text-pink-600 font-medium mb-3">{role}</p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
                 {tags.map(tag => (
@@ -49,6 +51,7 @@ export default function About() {
                         tags={['Doutor em Educação (UFRJ)', 'Ciência do Afeto', 'Artista HipHop']}
                         bio="Sou Educador, artista de HipHop, Doutor em Educação pela Universidade Federal do Rio de Janeiro e tenho especialidade em distribuição de oportunidades educacionais. Sou fundador da metodologia educacional Ciência do Afeto e da Educação com Evidências."
                         imageSrc="/will.jpg"
+                        linkedinUrl="https://www.linkedin.com/in/williamcorreademelo/"
                     />
                     <TeamMember
                         name="Isabel Costa"
@@ -56,6 +59,7 @@ export default function About() {
                         tags={['Administração (UVA)', 'Gestão de Processos', 'Operações']}
                         bio="Natural do Rio de Janeiro, formada em Administração de Empresas pela Universidade Veiga de Almeida (UVA). Responsável por garantir que nossa operação flua com eficiência e carinho."
                         imageSrc="/isabel.png"
+                        linkedinUrl="https://www.linkedin.com/in/isabel-c-aa9117a7/"
                     />
                 </div>
             </div>

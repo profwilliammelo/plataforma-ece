@@ -239,7 +239,7 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                 }`}
                         >
                             <Map size={18} />
-                            Monitor
+                            Recursos Digitais
                         </button>
                     </div>
 
@@ -424,15 +424,12 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden h-[600px] animate-fade-in relative">
                         <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-center p-8">
                             <div className="bg-white p-6 rounded-full shadow-sm mb-4">
-                                <BarChart2 className="h-12 w-12 text-brand-brown" />
+                                <Map className="h-12 w-12 text-gray-400" />
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Painel de Dados Carregando...</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Em Construção</h3>
                             <p className="text-gray-500 max-w-md">
-                                Aqui entrará o seu app <strong>Shiny</strong> ou <strong>Streamlit</strong> via iframe.
+                                Estamos preparando recursos digitais incríveis para apoiar sua gestão e planejamento.
                             </p>
-                            <div className="mt-6 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm font-mono border border-yellow-200">
-                                &lt;iframe src="https://will-melo.shinyapps.io/seu-app" /&gt;
-                            </div>
                         </div>
                     </div>
                 )}
