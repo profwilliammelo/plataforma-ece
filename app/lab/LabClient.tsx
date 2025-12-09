@@ -2,17 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { BookOpen, Map, Search, Heart, Lightbulb, BarChart2, Filter, Download, FileText, ExternalLink, Calendar, X } from 'lucide-react';
-
-interface Evidence {
-    id: number;
-    title: string;
-    summary: string;
-    action: string;
-    tags: string[];
-    validity: string;
-    link?: string;
-    year?: number;
-}
+import { Evidence } from '../../types/evidence';
+import EvidenceDetailModal from '../../components/EvidenceDetailModal';
 
 interface LabClientProps {
     initialEvidenceData: Evidence[] | null;
@@ -21,6 +12,7 @@ interface LabClientProps {
 export default function LabClient({ initialEvidenceData }: LabClientProps) {
     const [activeTab, setActiveTab] = useState('library');
     const [evidenceData] = useState<Evidence[]>(initialEvidenceData || []);
+    const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
 
     // States de Filtro
     const [showFilters, setShowFilters] = useState(false);
@@ -182,6 +174,14 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
+            {/* Modal de Detalhes */}
+            {selectedEvidence && (
+                <EvidenceDetailModal
+                    evidence={selectedEvidence}
+                    onClose={() => setSelectedEvidence(null)}
+                />
+            )}
+
             {/* Lab Header */}
             <div className="bg-brand-brown pt-12 pb-24 px-4">
                 <div className="max-w-7xl mx-auto">
@@ -201,8 +201,8 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                         <button
                             onClick={() => setActiveTab('library')}
                             className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'library'
-                                    ? 'bg-pink-100 text-brand-brown'
-                                    : 'text-gray-500 hover:bg-gray-50'
+                                ? 'bg-pink-100 text-brand-brown'
+                                : 'text-gray-500 hover:bg-gray-50'
                                 }`}
                         >
                             <BookOpen size={18} />
@@ -211,8 +211,8 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                         <button
                             onClick={() => setActiveTab('data')}
                             className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'data'
-                                    ? 'bg-pink-100 text-brand-brown'
-                                    : 'text-gray-500 hover:bg-gray-50'
+                                ? 'bg-pink-100 text-brand-brown'
+                                : 'text-gray-500 hover:bg-gray-50'
                                 }`}
                         >
                             <Map size={18} />
@@ -315,7 +315,11 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                         {/* Lista de Cards */}
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredData.length > 0 ? filteredData.map((item) => (
-                                <div key={item.id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all flex flex-col h-full group">
+                                <div
+                                    key={item.id}
+                                    className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all flex flex-col h-full group cursor-pointer"
+                                    onClick={() => setSelectedEvidence(item)}
+                                >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className={`text-xs font-bold px-3 py-1 rounded-full border ${getValidityColor(item.validity)}`}>
                                             {item.validity}
@@ -326,32 +330,27 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                                     <Calendar size={12} /> {item.year}
                                                 </span>
                                             )}
-                                            {item.link && (
-                                                <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-brand-brown transition-colors">
-                                                    <ExternalLink size={20} />
-                                                </a>
-                                            )}
                                         </div>
                                     </div>
 
                                     <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 leading-tight group-hover:text-brand-brown transition-colors">{item.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-6 flex-grow">{item.summary}</p>
+                                    <p className="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">{item.summary}</p>
 
                                     <div className="bg-[#FFF0F5] p-4 rounded-xl border border-pink-100 mt-auto">
                                         <div className="flex items-center gap-2 text-brand-brown font-bold text-sm mb-2">
                                             <Lightbulb size={16} />
                                             Ação Prática:
                                         </div>
-                                        <p className="text-gray-800 text-sm">{item.action}</p>
+                                        <p className="text-gray-800 text-sm line-clamp-2">{item.action}</p>
                                     </div>
 
                                     <div className="mt-4 flex gap-2 flex-wrap items-center justify-between">
                                         <div className="flex gap-2 flex-wrap">
-                                            {item.tags?.map(tag => (
+                                            {item.tags?.slice(0, 3).map(tag => (
                                                 <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">#{tag}</span>
                                             ))}
                                         </div>
-                                        <button className="text-gray-300 hover:text-pink-500 transition-colors"><Heart size={20} /></button>
+                                        {item.details && <span className="text-xs text-brand-brown font-bold underline">Ver detalhes +</span>}
                                     </div>
                                 </div>
                             )) : (
