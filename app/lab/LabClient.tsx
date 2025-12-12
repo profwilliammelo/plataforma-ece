@@ -1,18 +1,50 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { BookOpen, Map, Search, Heart, Lightbulb, BarChart2, Filter, Download, FileText, ExternalLink, Calendar, X } from 'lucide-react';
+import { BookOpen, Map, Search, Heart, Lightbulb, Filter, Download, FileText, Calendar } from 'lucide-react';
 import { Evidence } from '../../types/evidence';
 import EvidenceDetailModal from '../../components/EvidenceDetailModal';
+import UserHeader from '../../components/UserHeader';
+import { User } from '@supabase/supabase-js';
+import { toggleFavorite } from './actions';
+
 
 interface LabClientProps {
     initialEvidenceData: Evidence[] | null;
+    user: User | null;
+    profile: { full_name?: string; acesso_bia?: boolean;[key: string]: unknown };
+    initialFavorites: string[]; // List of evidence IDs
 }
 
-export default function LabClient({ initialEvidenceData }: LabClientProps) {
+export default function LabClient({ initialEvidenceData, user, profile, initialFavorites = [] }: LabClientProps) {
     const [activeTab, setActiveTab] = useState('library');
     const [evidenceData] = useState<Evidence[]>(initialEvidenceData || []);
     const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
+    const [favorites, setFavorites] = useState<Set<string>>(new Set(initialFavorites));
+
+    // Handle initial tab from URL hash/query if needed, but simple state is fine for now.
+
+    const handleToggleFavorite = async (e: React.MouseEvent, evidenceID: string) => {
+        e.stopPropagation(); // Prevent opening modal
+        if (!user) return; // Or show toaster "Faça login"
+
+        // Optimistic UI
+        const newFavorites = new Set(favorites);
+        if (newFavorites.has(evidenceID)) {
+            newFavorites.delete(evidenceID);
+        } else {
+            newFavorites.add(evidenceID);
+        }
+        setFavorites(newFavorites);
+
+        // Server Action
+        try {
+            await toggleFavorite(evidenceID);
+        } catch (err) {
+            console.error(err);
+            // Revert on error would go here
+        }
+    };
 
     // States de Filtro
     const [showFilters, setShowFilters] = useState(false);
@@ -215,6 +247,11 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                         A ponte entre a teoria e a sua sala de aula. Navegue por evidências ou explore os dados do seu território.
                     </p>
                 </div>
+                {user && (
+                    <div className="absolute top-8 right-8">
+                        <UserHeader user={user} profile={profile} />
+                    </div>
+                )}
             </div>
 
             <div className="max-w-7xl mx-auto px-4 -mt-16">
@@ -363,6 +400,18 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                                     onClick={() => setSelectedEvidence(item)}
                                 >
                                     <div className="flex justify-between items-start mb-4">
+                                        <div className="flex items-center gap-2 mb-3">
+
+                                            {user && (
+                                                <button
+                                                    onClick={(e) => handleToggleFavorite(e, String(item.id))}
+                                                    className={`ml-auto p-2 rounded-full transition-colors ${favorites.has(String(item.id)) ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-300 hover:bg-gray-50'}`}
+                                                    title={favorites.has(String(item.id)) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                                >
+                                                    <Heart size={20} fill={favorites.has(String(item.id)) ? "currentColor" : "none"} />
+                                                </button>
+                                            )}
+                                        </div>
                                         <div className="flex gap-1">
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getColor(item.validade_interna)}`} title="Certeza de Causa">
                                                 Causa: {item.validade_interna}
@@ -433,6 +482,8 @@ export default function LabClient({ initialEvidenceData }: LabClientProps) {
                         </div>
                     </div>
                 )}
+
+
             </div>
         </div>
     );

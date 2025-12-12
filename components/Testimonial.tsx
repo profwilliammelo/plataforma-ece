@@ -13,7 +13,7 @@ export default function Testimonial() {
                         <div className="text-center sm:text-left">
                             <div className="mb-4">⭐⭐⭐⭐⭐</div>
                             <p className="text-lg sm:text-2xl font-medium leading-relaxed italic mb-6">
-                                "Eu me sentia muito insegura recém-aprovada no concurso. O EcE me deu um 'norte' prático, baseado em ciência, mas com uma linguagem que abraça a gente."
+                                &quot;Eu me sentia muito insegura recém-aprovada no concurso. O EcE me deu um &apos;norte&apos; prático, baseado em ciência, mas com uma linguagem que abraça a gente.&quot;
                             </p>
                             <div>
                                 <p className="font-bold text-lg">Priscila Santos</p>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { X, Target, GitMerge, AlertTriangle, BookOpen, ExternalLink } from 'lucide-react';
-import { Evidence, EvidenceDetail } from '../types/evidence';
+import { X, Target, GitMerge, BookOpen, ExternalLink } from 'lucide-react';
+import { Evidence } from '../types/evidence';
 
 interface EvidenceDetailModalProps {
     evidence: Evidence;
@@ -20,7 +20,7 @@ const ValidityBadge = ({ value }: { value: string }) => {
         'Limitada': 'bg-orange-50 text-orange-800 border-orange-200',
         'Muito Limitada': 'bg-red-50 text-red-800 border-red-200',
     };
-    // @ts-ignore
+    // @ts-expect-error Index signature is missing in type
     const colorClass = colors[value] || 'bg-gray-100 text-gray-800';
 
     return <span className={`px-2 py-1 rounded-md text-xs font-bold border ${colorClass}`}>{value}</span>;

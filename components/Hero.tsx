@@ -14,7 +14,7 @@ export default function Hero() {
                         Transformamos dados e boas evidências em <span className="text-brand-brown">acolhimento e ações reais.</span>
                     </h1>
                     <p className="text-lg sm:text-xl text-gray-600 mb-10 leading-relaxed">
-                        Uma instituição que conecta pesquisas a práticas simples para professores, gestores e famílias. Sem "academiquês".
+                        Uma instituição que conecta pesquisas a práticas simples para professores, gestores e famílias. Sem &quot;academiquês&quot;.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link
