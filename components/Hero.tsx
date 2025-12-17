@@ -8,7 +8,7 @@ export default function Hero() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
                     <span className="inline-block bg-white/60 backdrop-blur border border-pink-100 text-brand-brown px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide mb-6">
-                        ✨ Ciência e Afeto em Educação
+                        ✨ Ciência, Afeto e, claro, Educação.
                     </span>
                     <h1 className="text-4xl sm:text-6xl font-extrabold text-[#1A1A1A] tracking-tight mb-6 leading-tight">
                         Transformamos dados e boas evidências em <span className="text-brand-brown">acolhimento e ações reais.</span>

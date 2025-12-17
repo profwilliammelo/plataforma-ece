@@ -13,17 +13,17 @@ export default async function LabPage() {
     let favorites: string[] = [];
 
     if (user) {
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        const { data } = await supabase.from('perfis').select('*').eq('id', user.id).single();
         profile = data;
 
-        const { data: favs } = await supabase.from('favorites').select('evidence_id').eq('user_id', user.id);
+        const { data: favs } = await supabase.from('favoritos').select('evidencia_id').eq('usuario_id', user.id);
         if (favs) {
-            favorites = favs.map(f => f.evidence_id);
+            favorites = favs.map(f => f.evidencia_id);
         }
     }
 
     const { data: evidences } = await supabase
-        .from('evidences')
+        .from('evidencias')
         .select('*');
 
     // fallback para array vazio se der erro ou null

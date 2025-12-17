@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { BookOpen, Map, Search, Heart, Lightbulb, Filter, Download, FileText, Calendar } from 'lucide-react';
+import Link from 'next/link';
+import { BookOpen, Map, Search, Heart, Lightbulb, Filter, Download, FileText, Calendar, Sparkles, ArrowRight } from 'lucide-react';
 import { Evidence } from '../../types/evidence';
 import EvidenceDetailModal from '../../components/EvidenceDetailModal';
 import UserHeader from '../../components/UserHeader';
@@ -73,9 +74,9 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
     const filteredData = useMemo(() => {
         return evidenceData.filter(item => {
             const matchesSearch =
-                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.action.toLowerCase().includes(searchTerm.toLowerCase());
+                item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.resumo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.acao.toLowerCase().includes(searchTerm.toLowerCase());
 
             const matchesTags = selectedTags.length === 0 || (item.tags && item.tags.some(tag => selectedTags.includes(tag)));
 
@@ -115,14 +116,14 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
             headers.join(','),
             ...filteredData.map(item => [
                 item.id,
-                `"${item.title.replace(/"/g, '""')}"`,
-                `"${item.summary.replace(/"/g, '""')}"`,
-                `"${item.action.replace(/"/g, '""')}"`,
+                `"${item.titulo.replace(/"/g, '""')}"`,
+                `"${item.resumo.replace(/"/g, '""')}"`,
+                `"${item.acao.replace(/"/g, '""')}"`,
                 `"${(item.tags || []).join(', ')}"`,
                 item.validade_interna,
                 item.confiabilidade,
                 item.validade_externa,
-                item.year || '',
+                item.ano || '',
                 item.link || ''
             ].join(','))
         ].join('\n');
@@ -191,14 +192,14 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                   <span class="validity" title="Precisão dos Dados">Dados: ${item.confiabilidade}</span>
                   <span class="validity" title="Potencial de Escala">Escala: ${item.validade_externa}</span>
               </div>
-              ${item.year ? `<span style="font-size: 12px; color: #666;">Ano: ${item.year}</span>` : ''}
+              ${item.ano ? `<span style="font-size: 12px; color: #666;">Ano: ${item.ano}</span>` : ''}
             </div>
-            <h2 class="title">${item.title}</h2>
-            <p style="color: #444; font-size: 14px; margin-bottom: 0;">${item.summary}</p>
+            <h2 class="title">${item.titulo}</h2>
+            <p style="color: #444; font-size: 14px; margin-bottom: 0;">${item.resumo}</p>
             
             <div class="action-box">
               <div class="section-title">⚡ Ação Prática</div>
-              <div style="font-size: 14px;">${item.action}</div>
+              <div style="font-size: 14px;">${item.acao}</div>
             </div>
 
             <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
@@ -424,23 +425,23 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                                             </span>
                                         </div>
                                         <div className="flex gap-2">
-                                            {item.year && (
+                                            {item.ano && (
                                                 <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">
-                                                    <Calendar size={12} /> {item.year}
+                                                    <Calendar size={12} /> {item.ano}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
 
-                                    <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 leading-tight group-hover:text-brand-brown transition-colors">{item.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">{item.summary}</p>
+                                    <h3 className="text-xl font-bold text-[#1A1A1A] mb-3 leading-tight group-hover:text-brand-brown transition-colors">{item.titulo}</h3>
+                                    <p className="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">{item.resumo}</p>
 
                                     <div className="bg-[#FFF0F5] p-4 rounded-xl border border-pink-100 mt-auto">
                                         <div className="flex items-center gap-2 text-brand-brown font-bold text-sm mb-2">
                                             <Lightbulb size={16} />
                                             Ação Prática:
                                         </div>
-                                        <p className="text-gray-800 text-sm line-clamp-2">{item.action}</p>
+                                        <p className="text-gray-800 text-sm line-clamp-2">{item.acao}</p>
                                     </div>
 
                                     <div className="mt-4 flex gap-2 flex-wrap items-center justify-between">
@@ -449,7 +450,7 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                                                 <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">#{tag}</span>
                                             ))}
                                         </div>
-                                        {item.details && <span className="text-xs text-brand-brown font-bold underline">Ver detalhes +</span>}
+                                        {item.detalhes && <span className="text-xs text-brand-brown font-bold underline">Ver detalhes +</span>}
                                     </div>
                                 </div>
                             )) : (
@@ -470,15 +471,37 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden h-[600px] animate-fade-in relative">
-                        <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-center p-8">
-                            <div className="bg-white p-6 rounded-full shadow-sm mb-4">
-                                <Map className="h-12 w-12 text-gray-400" />
+                    <div className="animate-fade-in">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {/* E-Vidente Card */}
+                            <Link href="/resources/e-vidente" className="block group">
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-pink-200 transition-all h-full flex flex-col relative overflow-hidden">
+                                    {/* Background Decorative */}
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pink-100 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-50 group-hover:scale-110 transition-transform"></div>
+
+                                    <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-brand-brown rounded-2xl flex items-center justify-center text-white shadow-lg mb-6 group-hover:scale-105 transition-transform z-10">
+                                        <Sparkles size={28} />
+                                    </div>
+
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand-brown transition-colors">E-Vidente</h3>
+                                    <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                                        Sua consultora pedagógica pessoal baseada em evidências. Crie planejamentos de aula impecáveis em segundos.
+                                    </p>
+
+                                    <div className="mt-auto flex items-center gap-2 text-sm font-bold text-brand-brown">
+                                        Acessar Ferramenta <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </div>
+                            </Link>
+
+                            {/* Placeholder for future tools */}
+                            <div className="bg-gray-50 rounded-3xl p-6 border border-dashed border-gray-200 flex flex-col items-center justify-center text-center opacity-60">
+                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-gray-400">
+                                    <Map size={24} />
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-400">Em Breve</h3>
+                                <p className="text-xs text-gray-400 mt-1">Novas ferramentas educacionais</p>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Em Construção</h3>
-                            <p className="text-gray-500 max-w-md">
-                                Estamos preparando recursos digitais incríveis para apoiar sua gestão e planejamento.
-                            </p>
                         </div>
                     </div>
                 )}

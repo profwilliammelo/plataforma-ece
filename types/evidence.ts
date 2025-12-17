@@ -26,9 +26,9 @@ export type ValidadeNivel = 'Alta' | 'Média' | 'Baixa' | 'N/A';
 
 export interface Evidence {
     id: number;
-    title: string;
-    summary: string;
-    action: string;
+    titulo: string;
+    resumo: string;
+    acao: string;
     tags: string[];
     // Novos critérios principais
     validade_interna: ValidadeNivel;
@@ -36,6 +36,6 @@ export interface Evidence {
     confiabilidade: ValidadeNivel;
 
     link?: string;
-    year?: number;
-    details?: EvidenceDetail;
+    ano?: number;
+    detalhes?: EvidenceDetail;
 }

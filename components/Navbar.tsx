@@ -42,20 +42,20 @@ export default function Navbar({ user }: NavbarProps) {
                             href="/"
                             className="font-medium text-brand-brown hover:opacity-80 transition-colors"
                         >
-                            Institucional
+                            Página inicial
                         </Link>
                         <Link
                             href="/metodologia"
                             className="font-medium text-gray-500 hover:text-brand-brown transition-colors"
                         >
-                            Metodologia
+                            Método EcE
                         </Link>
                         <Link
                             href="/lab"
                             className="bg-brand-brown hover:bg-[#4E342E] text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-md flex items-center gap-2"
                         >
                             <Lightbulb size={18} />
-                            Acessar EcE Lab
+                            Acessar EcE.Lab
                         </Link>
 
                         <Link

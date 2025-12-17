@@ -47,9 +47,12 @@ export default function MethodologyPage() {
               <BookOpen size={24} />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">1. Baobá do Conhecimento</h3>
-            <p className="text-gray-600 leading-relaxed text-sm">
+            <p className="text-gray-600 leading-relaxed text-sm mb-4">
               Representamos a ciência com o <strong>Baobá</strong>, árvore símbolo de resistência e ancestralidade. Assim como suas raízes profundas nutrem o solo, nossa base é a evidência científica sólida e contextualizada, que sustenta todo o ecossistema educacional.
             </p>
+            <Link href="/nota-tecnica" className="text-brand-brown text-xs font-bold hover:underline flex items-center gap-1">
+              <BookOpen size={14} /> Ver Nota Técnica sobre Classificação de Evidências
+            </Link>
           </div>
 
           <div>

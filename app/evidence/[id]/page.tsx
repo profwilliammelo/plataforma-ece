@@ -37,14 +37,14 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
                             </span>
                             <span className="flex items-center gap-1 text-sm">
                                 <Calendar size={14} />
-                                {evidence.year || '2024'}
+                                {evidence.ano || '2024'}
                             </span>
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-6">
-                            {evidence.title}
+                            {evidence.titulo}
                         </h1>
                         <p className="text-xl text-orange-50 font-light leading-relaxed max-w-2xl">
-                            {evidence.summary}
+                            {evidence.resumo}
                         </p>
                     </div>
 
@@ -56,14 +56,14 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
                                     O que diz a ciência?
                                 </h3>
                                 <div className="prose prose-brown max-w-none text-gray-600 leading-relaxed">
-                                    {evidence.details?.resultados_texto || evidence.summary}
+                                    {evidence.detalhes?.resultados_texto || evidence.resumo}
                                 </div>
                             </section>
 
                             <section className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
                                 <h4 className="font-bold text-brand-brown mb-2">Aplicação Prática</h4>
                                 <p className="text-gray-700">
-                                    {evidence.action}
+                                    {evidence.acao}
                                 </p>
                             </section>
                         </div>

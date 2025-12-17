@@ -1,0 +1,14 @@
+﻿app/api/checkout_sessions/route.ts(7,5): error TS2322: Type '"2025-01-27.acacia"' is not assignable to type '"2025-11-17.clover"'.
+app/api/create_portal_session/route.ts(5,59): error TS2352: Conversion of type '{ apiVersion: "2025-01-27.acacia"; }' to type 'StripeConfig' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'apiVersion' are incompatible.
+    Type '"2025-01-27.acacia"' is not comparable to type '"2025-11-17.clover"'.
+app/api/webhooks/route.ts(6,59): error TS2352: Conversion of type '{ apiVersion: "2025-01-27.acacia"; }' to type 'StripeConfig' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'apiVersion' are incompatible.
+    Type '"2025-01-27.acacia"' is not comparable to type '"2025-11-17.clover"'.
+app/evidence/[id]/page.tsx(40,43): error TS2339: Property 'year' does not exist on type 'Evidence'.
+app/evidence/[id]/page.tsx(44,39): error TS2339: Property 'title' does not exist on type 'Evidence'.
+app/evidence/[id]/page.tsx(47,39): error TS2339: Property 'summary' does not exist on type 'Evidence'.
+app/evidence/[id]/page.tsx(59,47): error TS2339: Property 'details' does not exist on type 'Evidence'.
+app/evidence/[id]/page.tsx(59,85): error TS2339: Property 'summary' does not exist on type 'Evidence'.
+app/evidence/[id]/page.tsx(66,47): error TS2339: Property 'action' does not exist on type 'Evidence'.
+scripts/check-product.ts(3,20): error TS2307: Cannot find module 'dotenv' or its corresponding type declarations.
