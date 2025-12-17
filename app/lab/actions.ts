@@ -137,7 +137,7 @@ export async function generateEducationalPlan(input: {
                 throw new Error("O modelo GPT-5.2 é exclusivo para o plano Intensivo.");
             }
 
-            const openai = new OpenAI(); // Lazy init
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy' }); // Lazy init with fallback
             const completion = await openai.chat.completions.create({
                 model: "gpt-5.2",
                 messages: [
@@ -150,7 +150,7 @@ export async function generateEducationalPlan(input: {
 
         } else {
             // Gemini Logic
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Lazy init
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy'); // Lazy init
             const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
             const result = await model.generateContent(prompt);
             generatedText = result.response.text();

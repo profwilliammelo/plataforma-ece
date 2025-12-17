@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/server';
 // Initialize Stripe with the private key
 export async function POST(request: Request) {
     try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
             apiVersion: '2025-11-17.clover',
         });
 
