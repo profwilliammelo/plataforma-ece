@@ -5,8 +5,7 @@ import OpenAI from "openai";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const openai = new OpenAI();
+
 
 export async function generateEducationalPlan(input: {
     topic: string;
@@ -138,6 +137,7 @@ export async function generateEducationalPlan(input: {
                 throw new Error("O modelo GPT-5.2 é exclusivo para o plano Intensivo.");
             }
 
+            const openai = new OpenAI(); // Lazy init
             const completion = await openai.chat.completions.create({
                 model: "gpt-5.2",
                 messages: [
@@ -150,6 +150,7 @@ export async function generateEducationalPlan(input: {
 
         } else {
             // Gemini Logic
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Lazy init
             const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
             const result = await model.generateContent(prompt);
             generatedText = result.response.text();
