@@ -20,9 +20,9 @@ export async function POST(request: Request) {
         let priceId;
 
         if (plan === 'casual') {
-            priceId = 'price_1SebaXF4rm3lI7H55REMC2dA';
+            priceId = 'price_1Sffz7FTKk14sJdfy0tvIq2N';
         } else if (plan === 'intensive') {
-            priceId = 'price_1Sf2arF4rm3lI7H5MxWqyPS6';
+            priceId = 'price_1SffzWFTKk14sJdfBKBLKUQD';
         } else {
             return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
         }

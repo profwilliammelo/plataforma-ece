@@ -127,8 +127,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, supa
 
     // Map Price IDs to Plan Names
     const PRICE_MAP: Record<string, string> = {
-        'price_1SebaXF4rm3lI7H55REMC2dA': 'casual',
-        'price_1Sf2arF4rm3lI7H5MxWqyPS6': 'intensive'
+        'price_1Sffz7FTKk14sJdfy0tvIq2N': 'casual',
+        'price_1SffzWFTKk14sJdfBKBLKUQD': 'intensive'
     };
 
     const newPlan = PRICE_MAP[priceId];
