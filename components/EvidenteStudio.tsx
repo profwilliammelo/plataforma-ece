@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { generateEducationalPlan, savePlan, chatWithPlan } from '../app/lab/actions';
 import { Sparkles, Loader2, BookOpen, Save, Zap, Brain, Lock, ArrowRight, Download, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Type, Heading1, Heading2, Palette, Undo, Redo, Highlighter } from 'lucide-react';
+import Link from 'next/link';
 import { Evidence } from '../types/evidence'; // Adjust path if needed
 
 interface EvidenteStudioProps {
@@ -236,7 +237,7 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
                                 <h4 className="font-bold text-yellow-800 text-sm">Modo Degustação</h4>
                                 <p className="text-xs text-yellow-700 mt-1">
                                     Você tem <strong>{usageLimit} gerações gratuitas</strong> por mês.
-                                    <br />Para uso ilimitado, <a href="/plans" className="underline font-bold hover:text-yellow-900">faça um upgrade</a>.
+                                    <br />Para uso ilimitado, <Link href="/plans" className="underline font-bold hover:text-yellow-900">faça um upgrade</Link>.
                                 </p>
                             </div>
                         </div>

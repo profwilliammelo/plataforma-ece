@@ -14,11 +14,11 @@ import {
     Calendar
 } from 'lucide-react';
 import { Evidence } from '@/types/evidence';
-import SavedPlansList from '@/components/SavedPlansList';
+import SavedPlansList, { SavedPlan } from '@/components/SavedPlansList';
 
 interface DashboardSectionsProps {
     hasEvidenteAccess: boolean;
-    savedPlans: any[];
+    savedPlans: SavedPlan[];
     favoritedEvidences: Evidence[];
 }
 

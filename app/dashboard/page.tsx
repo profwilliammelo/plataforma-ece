@@ -32,7 +32,7 @@ export default async function DashboardPage() {
         .eq('usuario_id', user.id)
         .eq('ativo', true);
 
-    const hasEvidenteAccess = userProducts?.some(up => up.produtos?.slug === 'e-vidente');
+    const hasEvidenteAccess = userProducts?.some(up => up.produtos?.slug === 'e-vidente') ?? false;
 
     // Fetch favorites
     const { data: favorites } = await supabase.from('favoritos').select('evidencia_id').eq('usuario_id', user.id);

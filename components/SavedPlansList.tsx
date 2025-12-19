@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Trash2, FileText, Calendar, ExternalLink, Loader2, Pencil } from 'lucide-react';
 import { deletePlan, renamePlan } from '../app/lab/actions';
 
-interface SavedPlan {
+export interface SavedPlan {
     id: string;
     titulo: string;
     conteudo_html: string;
