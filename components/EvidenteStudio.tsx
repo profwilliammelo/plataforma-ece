@@ -35,6 +35,10 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
     const [loadingStep, setLoadingStep] = useState(1);
 
     // Chat States
+    const [generationTime, setGenerationTime] = useState(0);
+    const [lastGenerationTime, setLastGenerationTime] = useState(0);
+
+    // Chat States
     const [chatOpen, setChatOpen] = useState(false);
     const [chatInput, setChatInput] = useState('');
     const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model', parts: string }[]>([]);
@@ -46,15 +50,35 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
         editorRef.current?.focus();
     };
 
+    // Timer Effect
+    React.useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isGenerating) {
+            setGenerationTime(0);
+            interval = setInterval(() => {
+                setGenerationTime(prev => prev + 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isGenerating]);
+
     // Only show "Modo Degustação" if limit is small (e.g., Free Tier = 2)
     // If limit is high (Casual=10, Intensive=Unlimited), do not show this banner.
     const isFree = usageLimit < 5;
+
+    const formatTime = (seconds: number) => {
+        if (seconds < 60) return `${seconds} segundos`;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins} minuto${mins > 1 ? 's' : ''} e ${secs} segundo${secs > 1 ? 's' : ''}`;
+    };
 
     async function handleGenerate(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsGenerating(true);
         setLoadingStep(1);
         setGeneratedPlan('');
+        setLastGenerationTime(0);
 
         // Animation Simulation
         const stepInterval = setInterval(() => {
@@ -64,10 +88,8 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
         const form = e.currentTarget;
         const formData = new FormData(form);
 
-        // Prepare context from top evidences (simplification)
-        const evidenceContext = evidences.slice(0, 5).map(e => `- ${e.titulo}: ${e.acao}`).join('\n');
-
         try {
+            // Note: evidenceContext removed. The server now fetches ALL evidence from the database.
             const result = await generateEducationalPlan({
                 topic: formData.get('topic') as string,
                 grade: formData.get('grade') as string,
@@ -75,18 +97,19 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
                 model: selectedModel,
                 duration_days: formData.get('duration_days') as string,
                 duration_time: formData.get('duration_time') as string,
-                evidenceContext: evidenceContext,
                 style,
                 includeERER
             });
             setGeneratedPlan(result.plan);
-            setChatOpen(true); // Auto-open chat
+            setLastGenerationTime(generationTime); // Will settle shortly due to scope, mostly approximate is fine or use ref
+            setChatOpen(true);
         } catch (error) {
             console.error(error);
             alert("Erro ao gerar plano. Tente novamente.");
         } finally {
             clearInterval(stepInterval);
             setIsGenerating(false);
+            setLastGenerationTime(prev => prev || generationTime); // Save the time
         }
     }
 
@@ -390,10 +413,17 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
                 {generatedPlan ? (
                     <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden flex flex-col h-full min-h-[600px] animate-slide-up">
                         <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center print:hidden">
-                            <span className="text-sm font-bold text-gray-500 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                Plano Gerado com Sucesso
-                            </span>
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-bold text-gray-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                    Plano Gerado com Sucesso
+                                </span>
+                                {lastGenerationTime > 0 && (
+                                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-md hidden lg:inline-block">
+                                        Pensou por {formatTime(lastGenerationTime)}
+                                    </span>
+                                )}
+                            </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => { setChatOpen(true); setIsChatMinimized(false); }}
@@ -492,13 +522,18 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
                                 </div>
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-2 animate-pulse">
-                                {loadingStep === 1 && "Analisando o tema..."}
-                                {loadingStep === 2 && "Consultando evidências científicas..."}
-                                {loadingStep === 3 && (includeERER ? "Conectando saberes ancestrais..." : "Estruturando objetivos...")}
-                                {loadingStep === 4 && "Desenhando a experiência..."}
-                                {loadingStep === 5 && "Refinando o visual final..."}
+                                {loadingStep === 1 && `Analisando ${evidences?.length || 50}+ evidências do acervo...`}
+                                {loadingStep === 2 && "Selecionando as melhores estratégias (ABNT)..."}
+                                {loadingStep === 3 && (includeERER ? "Conectando saberes ancestrais e Lei 10.639..." : "Estruturando objetivos e justificativas...")}
+                                {loadingStep === 4 && "Desenhando a experiência visual..."}
+                                {loadingStep >= 5 && "Finalizando detalhes..."}
                             </h3>
-                            <p className="text-gray-500 text-sm">Criando algo incrível com o estilo {style}...</p>
+                            <div className="flex justify-center mt-2">
+                                <span className="bg-gray-100 px-3 py-1 rounded-full text-xs font-mono text-gray-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    {formatTime(generationTime)}
+                                </span>
+                            </div>
                         </div>
                     ) : (
                         <>
@@ -519,10 +554,11 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
             {chatOpen && generatedPlan && (
                 <div
                     className={`
-                        fixed inset-0 lg:absolute lg:inset-auto lg:right-0 lg:top-0 lg:bottom-0 z-50 lg:z-20
-                        bg-white lg:rounded-l-3xl shadow-2xl lg:shadow-xl lg:border-l border-gray-200 
-                        transition-all duration-300 ease-in-out flex flex-col
-                        ${isChatMinimized ? 'lg:w-[60px] lg:h-[60px] lg:top-auto lg:bottom-8 lg:right-8 lg:rounded-full lg:overflow-hidden bg-brand-brown cursor-pointer hover:scale-105' : 'lg:w-[380px] w-full h-full lg:h-auto'}
+                        fixed z-50 transition-all duration-300 ease-in-out flex flex-col shadow-2xl bg-white
+                        ${isChatMinimized
+                            ? 'bottom-8 right-8 w-14 h-14 rounded-full overflow-hidden bg-brand-brown cursor-pointer hover:scale-110'
+                            : 'top-0 right-0 h-full w-full lg:w-[400px] border-l border-gray-200'
+                        }
                     `}
                     onClick={isChatMinimized ? () => setIsChatMinimized(false) : undefined}
                 >

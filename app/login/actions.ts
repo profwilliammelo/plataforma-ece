@@ -13,7 +13,14 @@ const getURL = () => {
         'http://localhost:3000/'
 
     // Make sure to include `https://` when not localhost.
-    url = url.includes('http') ? url : `https://${url}`
+    if (!url.includes('http')) {
+        url = url.includes('localhost') ? `http://${url}` : `https://${url}`
+    }
+
+    // Force http for localhost if accidentally set to https in env
+    if (url.includes('localhost') && url.includes('https')) {
+        url = url.replace('https', 'http')
+    }
     // Remove trailing slash if present to avoid double slashes when determining redirect path
     url = url.charAt(url.length - 1) === '/' ? url.slice(0, -1) : url
 
@@ -94,8 +101,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
 export async function signInWithGoogle() {
     const supabase = await createClient()
     const redirectUrl = `${getURL()}/auth/callback`
-
-    console.log('signInWithGoogle initiating with redirectUrl:', redirectUrl)
+    console.log('>>> LOGIN INITIATED. Target Redirect:', redirectUrl);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

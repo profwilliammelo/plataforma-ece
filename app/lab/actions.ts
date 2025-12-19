@@ -14,7 +14,6 @@ export async function generateEducationalPlan(input: {
     model?: 'gemini' | 'gpt-5.2';
     duration_days?: string;
     duration_time?: string;
-    evidenceContext?: string;
     style?: string; // 'academic', 'gamified', 'tech', 'minimalist', 'custom'
     customStyleContext?: string;
     includeERER?: boolean; // Mode 10639
@@ -35,6 +34,17 @@ export async function generateEducationalPlan(input: {
     if (usageCount >= limit) {
         throw new Error("Limite mensal atingido.");
     }
+
+    // 1.5. Server-Side Evidence Fetching (FULL LIBRARY)
+    // Fetch critical fields to minimize token usage but maximize context
+    const { data: allEvidences } = await supabase
+        .from('evidencias')
+        .select('titulo, acao, autor, ano, detalhes');
+
+    // Create a dense context string
+    const evidenceContext = allEvidences?.map(e =>
+        `- EVIDÊNCIA: ${e.titulo} (${e.ano || 's/d'}). AÇÃO RECOMENDADA: ${e.acao}. ${e.detalhes?.referencia ? 'REF: ' + e.detalhes.referencia : ''}`
+    ).join('\n') || "Nenhuma evidência encontrada.";
 
     // --- STYLE LOGIC ---
     let styleInstructions = "";
@@ -84,7 +94,9 @@ export async function generateEducationalPlan(input: {
     ${input.context ? `CONTEXTO: ${input.context}` : ''}
     ${input.duration_days ? `DURAÇÃO: ${input.duration_days} dias, ${input.duration_time} por dia` : ''}
     
-    ${input.evidenceContext ? `BASEADO NAS SEGUINTES EVIDÊNCIAS:\n${input.evidenceContext}` : ''}
+    BASE DE CONHECIMENTO CIENTÍFICO (EVIDÊNCIAS DISPONÍVEIS):
+    O usuário espera que você selecione e aplique as melhores evidências abaixo para embasar o plano.
+    ${evidenceContext}
 
     DIRETRIZES DE ESTILO:
     ${styleInstructions}
@@ -95,7 +107,7 @@ export async function generateEducationalPlan(input: {
     - O visual deve ser MODERNO e responsivo.
     - Use cartões (cards) para separar seções.
 
-    ESTRUTURA DA RESPOSTA (Siga rigorosamente, adaptando o tom ao estilo escolhido):
+    ESTRUTURA DA RESPOSTA (Siga rigorosamente):
 
     <div class="space-y-6 font-sans text-gray-900 bg-white p-2 md:p-4">
         
@@ -109,20 +121,26 @@ export async function generateEducationalPlan(input: {
         </div>
 
         <!-- CONTEÚDO -->
-        <!-- Inclua: Objetivos, Justificativa (Evidências/ERER), Roteiro Detalhado, Atividade Fixação, Avaliação -->
-        <!-- Use cards, ícones e destaques visuais -->
+        <!-- Inclua: Objetivos, Justificativa (Cite as evidências usadas), Roteiro Detalhado, Atividade Fixação, Avaliação -->
         
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-l-4 border-emerald-500">
              <h2 class="text-xl font-bold mb-4">🎯 Objetivos</h2>
              <!-- Lista -->
         </div>
 
-        <!-- Se ERER estiver ativado, inclua um box sutil "Conexão 10.639" ou integre no roteiro -->
-
         <!-- Roteiro -->
         <div class="space-y-4">
             <h2 class="text-xl font-bold">⏱️ Roteiro</h2>
             <!-- Etapas -->
+        </div>
+
+        <!-- REFERÊNCIAS BIBLIOGRÁFICAS (ABNT) - OBRIGATÓRIO -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">📚 Referências Bibliográficas (Baseadas em Evidências)</h3>
+            <ul class="list-disc pl-5 text-sm text-gray-600 space-y-2">
+                <!-- Liste AQUI as referências completas (Autor, Título, Ano, etc.) das evidências que você escolheu usar no plano acima. -->
+                <!-- Se a evidência tiver o campo REF, use-o ou adapte para ABNT. -->
+            </ul>
         </div>
 
     </div>
