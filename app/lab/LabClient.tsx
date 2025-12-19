@@ -556,13 +556,38 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                         </div>
                     </div>
                 ) : (
-                    <div className="py-20 text-center">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Map size={32} className="text-gray-400" />
+                    <div className="py-8 animate-fade-in">
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {/* Card E-Vidente */}
+                            <Link href="/resources/e-vidente" className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-pink-100 to-transparent opacity-50 rounded-bl-full -mr-6 -mt-6 transition-transform group-hover:scale-110"></div>
+
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="p-3 bg-gradient-to-br from-pink-500 to-brand-brown rounded-xl text-white shadow-lg shadow-pink-500/20">
+                                        <Sparkles size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-gray-800 text-lg">E-Vidente ✨</h3>
+                                        <p className="text-xs text-brand-brown font-bold uppercase tracking-wider">IA Pedagógica</p>
+                                    </div>
+                                </div>
+
+                                <p className="text-gray-600 text-sm mb-6 line-clamp-3">
+                                    Sua consultora de elite. Crie planejamentos baseados em evidências, sequências didáticas e muito mais em segundos.
+                                </p>
+
+                                <div className="flex items-center text-brand-brown font-bold text-sm gap-2 group-hover:gap-3 transition-all">
+                                    Acessar Landing Page <ArrowRight size={16} />
+                                </div>
+                            </Link>
+
+                            {/* Card Placeholder for Future Tools */}
+                            <div className="bg-gray-50 rounded-3xl p-6 border border-dashed border-gray-300 flex flex-col items-center justify-center text-center opacity-70">
+                                <Map size={32} className="text-gray-400 mb-3" />
+                                <h3 className="font-bold text-gray-600">Mapa de Território</h3>
+                                <p className="text-xs text-gray-400 mt-1">Em breve</p>
+                            </div>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-700">Recursos Digitais</h3>
-                        <p className="text-gray-500">Explore dados detalhados do seu território.</p>
-                        <p className="text-xs text-brand-brown mt-2 font-bold bg-pink-50 inline-block px-3 py-1 rounded-full">Em desenvolvimento</p>
                     </div>
                 )}
             </div>
