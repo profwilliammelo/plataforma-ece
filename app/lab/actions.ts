@@ -26,13 +26,33 @@ export async function generateEducationalPlan(input: {
     }
 
     // 1. Check Usage Limits
+    // We now CROSS-REFERENCE with 'produtos_usuario' to ensure the user actually has an active seat.
+    // If 'ativo' is FALSE in produtos_usuario, we force the user to 'free' tier (limit 2),
+    // ignoring whatever stale state might be in 'perfis.plano'.
+
     const { data: profile } = await supabase.from('perfis').select('limite_mensal, planos_gerados_mes, plano').eq('id', user.id).single();
-    const limit = profile?.limite_mensal || 2;
+
+    // Check if user has ANY active product that grants access to E-Vidente
+    const { data: activeProduct } = await supabase
+        .from('produtos_usuario')
+        .select('ativo, produtos(slug)')
+        .eq('usuario_id', user.id)
+        .eq('ativo', true)
+        .eq('produtos.slug', 'e-vidente') // Verify slug matches your DB
+        .single();
+
+    let limit = profile?.limite_mensal || 2;
+    let userPlan = profile?.plano || 'free';
     const usageCount = profile?.planos_gerados_mes || 0;
-    const userPlan = profile?.plano || 'free';
+
+    // OVERRIDE: If no active product found, force Free Tier logic
+    if (!activeProduct) {
+        userPlan = 'free';
+        limit = 2; // Hard usage limit for free tier
+    }
 
     if (usageCount >= limit) {
-        throw new Error("Limite mensal atingido.");
+        throw new Error(`Limite mensal atingido. Você usou ${usageCount} de ${limit} gerações. Faça um upgrade para continuar.`);
     }
 
     // 1.5. Server-Side Evidence Fetching (FULL LIBRARY)
