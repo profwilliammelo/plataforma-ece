@@ -573,18 +573,18 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                                 </div>
 
                                 <p className="text-gray-600 text-sm mb-6 line-clamp-3">
-                                    Sua consultora de elite. Crie planejamentos baseados em evidências, sequências didáticas e muito mais em segundos.
+                                    Sua consultora especialista em boas pesquisas. Crie planejamentos baseados em evidências, sequências didáticas e muito mais em segundos.
                                 </p>
 
                                 <div className="flex items-center text-brand-brown font-bold text-sm gap-2 group-hover:gap-3 transition-all">
-                                    Acessar Landing Page <ArrowRight size={16} />
+                                    Acessar ferramenta <ArrowRight size={16} />
                                 </div>
                             </Link>
 
                             {/* Card Placeholder for Future Tools */}
                             <div className="bg-gray-50 rounded-3xl p-6 border border-dashed border-gray-300 flex flex-col items-center justify-center text-center opacity-70">
                                 <Map size={32} className="text-gray-400 mb-3" />
-                                <h3 className="font-bold text-gray-600">Mapa de Território</h3>
+                                <h3 className="font-bold text-gray-600">Outras ferramentas</h3>
                                 <p className="text-xs text-gray-400 mt-1">Em breve</p>
                             </div>
                         </div>

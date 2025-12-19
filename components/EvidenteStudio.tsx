@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { generateEducationalPlan, savePlan, chatWithPlan } from '../app/lab/actions';
-import { Sparkles, Loader2, BookOpen, Save, Zap, Brain, Lock, ArrowRight, Download, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Type, Heading1, Heading2, Palette, Undo, Redo } from 'lucide-react';
+import { Sparkles, Loader2, BookOpen, Save, Zap, Brain, Lock, ArrowRight, Download, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Type, Heading1, Heading2, Palette, Undo, Redo, Highlighter } from 'lucide-react';
 import { Evidence } from '../types/evidence'; // Adjust path if needed
 
 interface EvidenteStudioProps {
@@ -495,7 +495,33 @@ export default function EvidenteStudio({ evidences, userPlan = 'free', usageLimi
                             </div>
                             <div className="flex items-center gap-1">
                                 <ToolbarButton onClick={() => execCmd('insertUnorderedList')} icon={List} title="Lista com Marcadores" />
-                                <ToolbarButton onClick={() => execCmd('insertOrderedList')} icon={ListOrdered} title="Lista Numerada" />
+                                <button onClick={() => execCmd('insertOrderedList')} className="p-2 hover:bg-gray-100 rounded text-gray-600" title="Lista Numerada"><ListOrdered size={18} /></button>
+                                <div className="w-px h-6 bg-gray-200 mx-2"></div>
+
+                                {/* Color Pickers */}
+                                <div className="flex items-center gap-1">
+                                    <label className="cursor-pointer p-2 hover:bg-gray-100 rounded text-gray-600 flex items-center gap-1" title="Cor do Texto">
+                                        <span className="font-bold text-xs">A</span>
+                                        <div className="w-4 h-4 rounded-full border border-gray-200 overflow-hidden">
+                                            <input
+                                                type="color"
+                                                onChange={(e) => execCmd('foreColor', e.target.value)}
+                                                className="w-8 h-8 -m-2 cursor-pointer"
+                                            />
+                                        </div>
+                                    </label>
+                                    <label className="cursor-pointer p-2 hover:bg-gray-100 rounded text-gray-600 flex items-center gap-1" title="Cor de Fundo (Marca-texto)">
+                                        <Highlighter size={16} />
+                                        <div className="w-4 h-4 rounded-full border border-gray-200 overflow-hidden">
+                                            <input
+                                                type="color"
+                                                onChange={(e) => execCmd('hiliteColor', e.target.value)}
+                                                className="w-8 h-8 -m-2 cursor-pointer"
+                                                defaultValue="#ffff00"
+                                            />
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
