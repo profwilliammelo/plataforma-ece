@@ -7,7 +7,7 @@ import { Evidence } from '../../types/evidence';
 import EvidenceDetailModal from '../../components/EvidenceDetailModal';
 import UserHeader from '../../components/UserHeader';
 import { User } from '@supabase/supabase-js';
-import { toggleFavorite } from './actions';
+import { toggleFavorite, generateEducationalPlan, chatWithPlan } from './actions';
 
 
 interface LabClientProps {
@@ -23,7 +23,92 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
     const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
     const [favorites, setFavorites] = useState<Set<string>>(new Set(initialFavorites));
 
-    // Handle initial tab from URL hash/query if needed, but simple state is fine for now.
+    // --- STATES DO GERADOR DE PLANOS ---
+    const [topic, setTopic] = useState('');
+    const [grade, setGrade] = useState('');
+    const [days, setDays] = useState('1');
+    const [timePerDay, setTimePerDay] = useState('50 min');
+    const [context, setContext] = useState('');
+    const [style, setStyle] = useState('academic');
+    const [includeERER, setIncludeERER] = useState(false);
+
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedPlan, setGeneratedPlan] = useState('');
+    const [loadingStep, setLoadingStep] = useState(1); // 1-5 for animation
+
+    // --- STATES DO CHAT ---
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatInput, setChatInput] = useState('');
+    const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model', parts: string }[]>([]);
+    const [isChatting, setIsChatting] = useState(false);
+
+    // --- HANDLERS ---
+    const handleGenerate = async () => {
+        setIsGenerating(true);
+        setLoadingStep(1);
+
+        // Simulation of steps
+        const stepInterval = setInterval(() => {
+            setLoadingStep(prev => prev < 5 ? prev + 1 : prev);
+        }, 3000);
+
+        try {
+            const { plan } = await generateEducationalPlan({
+                topic, grade, context,
+                duration_days: days, duration_time: timePerDay,
+                style, includeERER
+            });
+            setGeneratedPlan(plan);
+            setChatOpen(true); // Auto open chat on success
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao gerar plano. Tente novamente.");
+        } finally {
+            clearInterval(stepInterval);
+            setIsGenerating(false);
+        }
+    };
+
+    const handleChatSend = async () => {
+        if (!chatInput.trim()) return;
+        const msg = chatInput;
+        setChatInput('');
+        setChatHistory(prev => [...prev, { role: 'user', parts: msg }]);
+        setIsChatting(true);
+
+        try {
+            const result = await chatWithPlan(chatHistory, generatedPlan, msg);
+            if (result.response) {
+                setChatHistory(prev => [...prev, { role: 'model', parts: result.response }]);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsChatting(false);
+        }
+    };
+
+    const printPlan = () => {
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Plano de Aula E-Vidente</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                </head>
+                <body class="p-8">
+                    <div class="max-w-4xl mx-auto prose">
+                        ${generatedPlan}
+                    </div>
+                    <script>
+                        setTimeout(() => { window.print(); window.close(); }, 500);
+                    </script>
+                </body>
+                </html>
+            `);
+        }
+    };
 
     const handleToggleFavorite = async (e: React.MouseEvent, evidenceID: string) => {
         e.stopPropagation(); // Prevent opening modal
@@ -471,43 +556,21 @@ export default function LabClient({ initialEvidenceData, user, profile, initialF
                         </div>
                     </div>
                 ) : (
-                    <div className="animate-fade-in">
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {/* E-Vidente Card */}
-                            <Link href="/resources/e-vidente" className="block group">
-                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-pink-200 transition-all h-full flex flex-col relative overflow-hidden">
-                                    {/* Background Decorative */}
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pink-100 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-50 group-hover:scale-110 transition-transform"></div>
-
-                                    <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-brand-brown rounded-2xl flex items-center justify-center text-white shadow-lg mb-6 group-hover:scale-105 transition-transform z-10">
-                                        <Sparkles size={28} />
-                                    </div>
-
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand-brown transition-colors">E-Vidente</h3>
-                                    <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                                        Sua consultora pedagógica pessoal baseada em evidências. Crie planejamentos de aula impecáveis em segundos.
-                                    </p>
-
-                                    <div className="mt-auto flex items-center gap-2 text-sm font-bold text-brand-brown">
-                                        Acessar Ferramenta <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Placeholder for future tools */}
-                            <div className="bg-gray-50 rounded-3xl p-6 border border-dashed border-gray-200 flex flex-col items-center justify-center text-center opacity-60">
-                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-gray-400">
-                                    <Map size={24} />
-                                </div>
-                                <h3 className="text-sm font-bold text-gray-400">Em Breve</h3>
-                                <p className="text-xs text-gray-400 mt-1">Novas ferramentas educacionais</p>
-                            </div>
+                    <div className="py-20 text-center">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Map size={32} className="text-gray-400" />
                         </div>
+                        <h3 className="text-lg font-bold text-gray-700">Recursos Digitais</h3>
+                        <p className="text-gray-500">Explore dados detalhados do seu território.</p>
+                        <p className="text-xs text-brand-brown mt-2 font-bold bg-pink-50 inline-block px-3 py-1 rounded-full">Em desenvolvimento</p>
                     </div>
                 )}
-
-
             </div>
         </div>
+
+
+
+
+
     );
 }

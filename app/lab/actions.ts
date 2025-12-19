@@ -1,6 +1,6 @@
 'use server';
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import OpenAI from "openai";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -15,6 +15,9 @@ export async function generateEducationalPlan(input: {
     duration_days?: string;
     duration_time?: string;
     evidenceContext?: string;
+    style?: string; // 'academic', 'gamified', 'tech', 'minimalist', 'custom'
+    customStyleContext?: string;
+    includeERER?: boolean; // Mode 10639
 }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -33,10 +36,48 @@ export async function generateEducationalPlan(input: {
         throw new Error("Limite mensal atingido.");
     }
 
+    // --- STYLE LOGIC ---
+    let styleInstructions = "";
+    switch (input.style) {
+        case 'academic':
+            styleInstructions = "Estilo ACADÊMICO: Use linguagem formal, cite bases teóricas e foque em rigor conceitual. Use tons sóbrios (azuis, cinzas) no design.";
+            break;
+        case 'gamified':
+            styleInstructions = "Estilo GAMIFICADO: Use termos de jogos (missões, XP, chefões), emojis divertidos e uma linguagem engajadora/entusiasmada. Cores vibrantes (roxo, laranja, verde).";
+            break;
+        case 'tech':
+            styleInstructions = "Estilo TECNOLÓGICO: Foque em inovação, futuro e ferramentas digitais. Use uma estética 'Cyber/Modern' (neons, preto, ciano).";
+            break;
+        case 'minimalist':
+            styleInstructions = "Estilo MINIMALISTA: Vá direto ao ponto. Pouco texto, muito espaço em branco, design limpo e essencialista. Preto e branco com detalhe sutil.";
+            break;
+        case 'custom':
+            styleInstructions = `Estilo PERSONALIZADO: ${input.customStyleContext || 'Siga as preferências do usuário.'}`;
+            break;
+        default: // 'standard'
+            styleInstructions = "Estilo PROFISSIONAL E MODERNO: Equilibrado, claro e inspirador. Cores índigo/azul.";
+    }
+
+    // --- ERER LOGIC (Mode 10639) ---
+    let ererContext = "";
+    if (input.includeERER) {
+        ererContext = `
+        MODO E-VIDENTE 10639 ATIVADO (Educação para Relações Étnico-Raciais):
+        - Sua missão é integrar SUTIL e ORGANICAMENTE a valorização da história e cultura afro-brasileira e indígena.
+        - Não force a barra; encontre conexões autênticas com o tema ${input.topic}.
+        - Utilize metodologias que favoreçam a equidade, o diálogo e o respeito à diversidade.
+        - Se possível, sugira autores, cientistas ou personalidades negras/indígenas relacionados ao tema.
+        - Refira-se, quando pertinente, a diretrizes da Lei 10.639/03, da Lei 11.645/08 e PNEERQ ou documentos do MEC/SECADI sobre diversidade.
+        - O objetivo é normalizar a presença negra/indígena no currículo, não apenas em datas comemorativas.
+        `;
+    }
+
     // 2. Build Prompt
     const prompt = `
     Atue como uma Consultora Pedagógica de Elite chamada "E-Vidente".
-    Sua missão é criar um planejamento de aula EXCEPCIONAL, visualmente IMPACTANTE e baseado em evidências científicas.
+    Sua missão é criar um planejamento de aula EXCEPCIONAL.
+    
+    ${ererContext}
 
     TEMA: ${input.topic}
     PÚBLICO: ${input.grade}
@@ -45,86 +86,45 @@ export async function generateEducationalPlan(input: {
     
     ${input.evidenceContext ? `BASEADO NAS SEGUINTES EVIDÊNCIAS:\n${input.evidenceContext}` : ''}
 
+    DIRETRIZES DE ESTILO:
+    ${styleInstructions}
+
     DIRETRIZES VISUAIS OBRIGATÓRIAS (HTML + TAILWIND CSS):
     - Use EXCLUSIVAMENTE tags HTML com classes Tailwind CSS inline.
-    - NÃO use Markdown. APENAS HTML.
-    - O visual deve ser MODERNO, LIMPO e PROFISSIONAL.
+    - NÃO use Markdown (nada de **bold** ou # header). APENAS HTML.
+    - O visual deve ser MODERNO e responsivo.
     - Use cartões (cards) para separar seções.
-    - Use ícones (emojis) para ilustrar cada seção.
 
-    ESTRUTURA DA RESPOSTA (Siga rigorosamente):
+    ESTRUTURA DA RESPOSTA (Siga rigorosamente, adaptando o tom ao estilo escolhido):
 
-    <div class="space-y-6 font-sans text-gray-900 bg-white">
+    <div class="space-y-6 font-sans text-gray-900 bg-white p-2 md:p-4">
         
-        <!-- CABEÇALHO -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-2xl shadow-lg mb-8">
-            <h1 class="text-3xl font-extrabold mb-2 text-white">📝 Título Criativo da Aula Aqui</h1>
-            <div class="flex flex-wrap gap-4 text-sm opacity-90 mt-4 text-white">
-                <span class="bg-white/20 px-3 py-1 rounded-full flex items-center gap-2 text-white">🎓 ${input.grade}</span>
-                <span class="bg-white/20 px-3 py-1 rounded-full flex items-center gap-2 text-white">⏳ ${input.duration_days || '1'} dia(s)</span>
-                <span class="bg-white/20 px-3 py-1 rounded-full flex items-center gap-2 text-white">📚 ${input.topic}</span>
+        <!-- CABEÇALHO (Adapte cores ao estilo) -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-2xl shadow-lg mb-8 text-white relative overflow-hidden">
+            <h1 class="text-3xl font-extrabold mb-2 relative z-10">📝 Título Criativo da Aula</h1>
+            <div class="flex flex-wrap gap-4 text-sm opacity-90 mt-4 relative z-10">
+                <span class="bg-white/20 px-3 py-1 rounded-full flex items-center gap-2">🎓 ${input.grade}</span>
+                <span class="bg-white/20 px-3 py-1 rounded-full flex items-center gap-2">⏳ ${input.duration_days || '1'} dia(s)</span>
             </div>
         </div>
 
-        <!-- OBJETIVOS -->
+        <!-- CONTEÚDO -->
+        <!-- Inclua: Objetivos, Justificativa (Evidências/ERER), Roteiro Detalhado, Atividade Fixação, Avaliação -->
+        <!-- Use cards, ícones e destaques visuais -->
+        
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-l-4 border-emerald-500">
-            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">🎯 Objetivos de Aprendizagem</h2>
-            <ul class="space-y-3 list-none">
-                <li class="flex items-start gap-3">
-                    <span class="text-emerald-600 mt-1 font-bold">✓</span>
-                    <span class="text-gray-800 font-medium">Objetivo claro e mensurável 1...</span>
-                </li>
-                <!-- listar 3-4 objetivos -->
-            </ul>
+             <h2 class="text-xl font-bold mb-4">🎯 Objetivos</h2>
+             <!-- Lista -->
         </div>
 
-        <!-- EVIDÊNCIAS -->
-        <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
-            <h2 class="text-xl font-bold text-indigo-800 mb-4 flex items-center gap-2">🧠 Por que isso funciona? (Ciência da Aprendizagem)</h2>
-            <p class="text-indigo-700/80 mb-4 italic">"Explicação breve sobre os princípios utilizados..."</p>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm">
-                    <strong class="text-indigo-600 block mb-1">Princípio 1</strong>
-                    <span class="text-sm text-gray-600">Explicação curta...</span>
-                </div>
-                <!-- mais princípios -->
-            </div>
-        </div>
+        <!-- Se ERER estiver ativado, inclua um box sutil "Conexão 10.639" ou integre no roteiro -->
 
-        <!-- ROTEIRO -->
+        <!-- Roteiro -->
         <div class="space-y-4">
-            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2 px-2">⏱️ Roteiro da Aula</h2>
-            
-            <!-- ETAPA 1 -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex gap-4 hover:border-blue-300 transition-colors">
-                <div class="bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded-lg h-fit shrink-0 whitespace-nowrap">10 min</div>
-                <div>
-                    <h3 class="font-bold text-gray-800 mb-1">Introdução / Aquecimento</h3>
-                    <p class="text-gray-600 leading-relaxed">Descrição detalhada do que o professor deve fazer...</p>
-                    <div class="mt-3 bg-yellow-50 text-yellow-800 text-sm p-3 rounded-lg inline-block">
-                        💡 <strong>Dica do Professor:</strong> Uma sugestão prática aqui.
-                    </div>
-                </div>
-            </div>
-
-            <!-- ETAPA 2... -->
+            <h2 class="text-xl font-bold">⏱️ Roteiro</h2>
+            <!-- Etapas -->
         </div>
 
-        <!-- FIXAÇÃO -->
-        <div class="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 rounded-2xl text-white shadow-md">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">🧩 Atividade de Fixação</h2>
-            <p class="opacity-90 leading-relaxed">Descrição da atividade prática para consolidar o aprendizado.</p>
-        </div>
-
-        <!-- AVALIAÇÃO -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">📊 Avaliação da Aprendizagem</h2>
-            <ul class="grid md:grid-cols-3 gap-4">
-                <li class="bg-gray-50 p-3 rounded-lg text-center text-sm font-medium text-gray-600">Critério 1</li>
-                <li class="bg-gray-50 p-3 rounded-lg text-center text-sm font-medium text-gray-600">Critério 2</li>
-                <li class="bg-gray-50 p-3 rounded-lg text-center text-sm font-medium text-gray-600">Critério 3</li>
-            </ul>
-        </div>
     </div>
     `;
 
@@ -132,16 +132,15 @@ export async function generateEducationalPlan(input: {
 
     try {
         if (input.model === 'gpt-5.2') {
-            // GPT-5.2 Logic
+            // GPT Logic (Legacy/Alternative)
             if (userPlan !== 'intensive') {
                 throw new Error("O modelo GPT-5.2 é exclusivo para o plano Intensivo.");
             }
-
-            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy' }); // Lazy init with fallback
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy' });
             const completion = await openai.chat.completions.create({
-                model: "gpt-5.2",
+                model: "gpt-5.2", // Simulator/Placeholder name
                 messages: [
-                    { role: "system", content: "Você é a E-Vidente, uma especialista em pedagogia baseada em evidências." },
+                    { role: "system", content: "Você é a E-Vidente." },
                     { role: "user", content: prompt }
                 ],
                 temperature: 0.7,
@@ -149,9 +148,30 @@ export async function generateEducationalPlan(input: {
             generatedText = completion.choices[0].message.content || "";
 
         } else {
-            // Gemini Logic
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy'); // Lazy init
-            const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
+            // Gemini Logic (Default)
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy');
+
+            const safetySettings = [
+                {
+                    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                    threshold: HarmBlockThreshold.BLOCK_NONE,
+                },
+                {
+                    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                    threshold: HarmBlockThreshold.BLOCK_NONE,
+                },
+                {
+                    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                    threshold: HarmBlockThreshold.BLOCK_NONE,
+                },
+                {
+                    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold: HarmBlockThreshold.BLOCK_NONE,
+                },
+            ];
+
+            // Using a capable model for generation
+            const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview", safetySettings });
             const result = await model.generateContent(prompt);
             generatedText = result.response.text();
         }
@@ -164,7 +184,8 @@ export async function generateEducationalPlan(input: {
         await supabase.from('logs_uso').insert({
             usuario_id: user.id,
             acao: 'gerar_plano',
-            modelo: input.model === 'gpt-5.2' ? 'gpt-5.2' : 'gemini-3',
+            modelo: input.model || 'gemini',
+            detalhes: { style: input.style, erer: input.includeERER },
             custo_creditos: 1
         });
 
@@ -172,9 +193,78 @@ export async function generateEducationalPlan(input: {
         const cleanHtml = generatedText.replace(/```html\s*/g, '').replace(/```/g, '');
         return { plan: cleanHtml };
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Generation Error:", error);
-        throw new Error("Erro ao gerar o plano. Tente novamente.");
+        throw new Error(`Erro ao gerar o plano: ${error.message || JSON.stringify(error)}`);
+    }
+}
+
+// === CHAT ACTION ===
+
+export async function chatWithPlan(
+    history: { role: 'user' | 'model', parts: string }[],
+    currentPlanHTML: string,
+    userMessage: string
+) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy');
+        // Requested model: gemini-3-flash-preview (or fallback to 1.5-flash if unavailable, but user insisted)
+        // Requested model: gemini-3-flash-preview for chat
+        const chatModel = genAI.getGenerativeModel({
+            model: "gemini-3-flash-preview",
+            // Apply safety settings here as well to avoid blocks on ERER content during chat
+            safetySettings: [
+                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            ]
+        });
+
+        // Context setup
+        const systemInstruction = `
+        Você é a E-Vidente, uma assistente pedagógica inteligente.
+        O usuário está visualizando um PLANO DE AULA gerado por você.
+        
+        CONTEÚDO ATUAL DO PLANO (HTML):
+        ${currentPlanHTML}
+        
+        SEU OBJETIVO: Ajudar o usuário a refinar, alterar ou tirar dúvidas sobre este plano.
+        
+        IMPORTANTE - PROTOCOLO DE ATUALIZAÇÃO:
+        1. Se o usuário pedir qualquer alteração que mude o plano (ex: "mude a atividade", "adicione mais tempo", "troque o estilo"), você DEVE fornecer o CÓDIGO HTML COMPLETO ATUALIZADO DO PLANO.
+        2. O código HTML deve vir SEMPRE dentro destes delimitadores exatos:
+           :::PLAN_START:::
+           <div...> ... seu html completo atualizado ... </div>
+           :::PLAN_END:::
+        3. Você deve responder ao usuário fora desses delimitadores com uma mensagem curta e amigável (ex: "Claro! Atualizei o plano com uma nova atividade de fixação. O que achou?").
+        4. Se for apenas uma dúvida sem alterar o plano, responda normalmente sem os delimitadores.
+        `;
+
+        const chat = chatModel.startChat({
+            history: [
+                { role: 'user', parts: [{ text: systemInstruction }] },
+                { role: 'model', parts: [{ text: "Entendido. Estou pronta para ajudar a refinar o plano." }] },
+                ...history.map(msg => ({
+                    role: msg.role,
+                    parts: [{ text: msg.parts }]
+                }))
+            ]
+        });
+
+        const result = await chat.sendMessage(userMessage);
+        const responseText = result.response.text();
+
+        return { response: responseText };
+
+    } catch (error) {
+        console.error("Chat Error:", error);
+        return { error: "Erro ao processar mensagem." };
     }
 }
 
