@@ -7,14 +7,22 @@ import { createClient } from '@/utils/supabase/server'
 
 const getURL = () => {
     let url =
-        process.env.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-        process.env.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-        process.env.VERCEL_URL ?? // Automatically set by Vercel.
+        process.env.NEXT_PUBLIC_SITE_URL || // Set this to your site URL in production env.
+        process.env.NEXT_PUBLIC_VERCEL_URL || // Automatically set by Vercel.
+        process.env.VERCEL_URL || // Automatically set by Vercel.
         'http://localhost:3000/'
+
     // Make sure to include `https://` when not localhost.
     url = url.includes('http') ? url : `https://${url}`
-    // Make sure to including trailing `/`.
-    url = url.charAt(url.length - 1) === '/' ? url : `${url}/`
+    // Remove trailing slash if present to avoid double slashes when determining redirect path
+    url = url.charAt(url.length - 1) === '/' ? url.slice(0, -1) : url
+
+    console.log('getURL resolved to:', url, {
+        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+        NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+        VERCEL_URL: process.env.VERCEL_URL
+    })
+
     return url
 }
 
@@ -85,10 +93,14 @@ export async function resetPassword(prevState: any, formData: FormData) {
 
 export async function signInWithGoogle() {
     const supabase = await createClient()
+    const redirectUrl = `${getURL()}/auth/callback`
+
+    console.log('signInWithGoogle initiating with redirectUrl:', redirectUrl)
+
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: `${getURL()}/auth/callback`,
+            redirectTo: redirectUrl,
             queryParams: {
                 access_type: 'offline',
                 prompt: 'consent',
